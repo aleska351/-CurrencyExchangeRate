@@ -45,18 +45,18 @@ CREATE TABLE if not EXISTS currencies
 );
 /* Fill table currencies*/
 insert into currencies (name, short_name, purchase, sale, bank_id)
-VALUES ('United States Dollar', 'USD', 28.25, 28.70, 1),
-       ('United States Dollar', 'USD', 28.25, 28.70, 1),
-       ('United States Dollar', 'USD', 28.25, 28.70, 3),
-       ('EURO', 'EUR', 33.55, 34.60, 1),
-       ('EURO', 'EUR', 33.55, 34.60, 2),
-       ('EURO', 'EUR', 33.55, 34.60, 3),
+VALUES ('United States Dollar', 'USD', 28.15, 28.70, 1),
+       ('United States Dollar', 'USD', 28.25, 28.50, 1),
+       ('United States Dollar', 'USD', 28.30, 28.60, 3),
+       ('EURO', 'EUR', 33.55, 34.65, 1),
+       ('EURO', 'EUR', 33.05, 34.35, 2),
+       ('EURO', 'EUR', 33.35, 34.60, 3),
        ('Canadian Dollar', 'CAD', 21.54, 21.78, 1),
        ('Hryvnia', 'UAH', 1, 1, 1),
        ('Hryvnia', 'UAH', 1, 1, 2),
        ('Hryvnia', 'UAH', 1, 1, 3),
-       ('British Pound ', 'GBP', 35.73, 37.73, 1),
-       ('British Pound ', 'GBP', 35.73, 37.73, 2),
+       ('British Pound ', 'GBP', 35.73, 37.95, 1),
+       ('British Pound ', 'GBP', 35.43, 37.56, 2),
        ('South African Rand ', 'ZAR', 0.56, 0.59, 1);
 
 
