@@ -1,7 +1,6 @@
 package com.goncharenko.currencyexchangerate.config;
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.IOException;
@@ -11,7 +10,6 @@ import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.Properties;
 
-@ComponentScan("com.goncharenko.currencyexchangerate")
 @Configuration
 public class ApplicationConfig {
 
