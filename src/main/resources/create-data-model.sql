@@ -1,16 +1,16 @@
-drop table currencies;
+drop table bank_type;
 /*Create table bank_type*/
-CREATE TABLE if not EXISTS bank_type
-(
-    id   SERIAL       NOT NULL PRIMARY KEY,
-    type VARCHAR(100) NOT NULL
-);
+-- CREATE TABLE if not EXISTS bank_type
+-- (
+--     id   SERIAL       NOT NULL PRIMARY KEY,
+--     type VARCHAR(100) NOT NULL
+-- );
 /* Fill table bank_type*/
-INSERT INTO bank_type (type)
-VALUES ('GLOBAL');
-INSERT INTO bank_type (type)
-VALUES ('LOCAL');
-
+-- INSERT INTO bank_type (type)
+-- VALUES ('GLOBAL');
+-- INSERT INTO bank_type (type)
+-- VALUES ('LOCAL');
+drop table banks;
 /*Create table banks*/
 CREATE TABLE if not EXISTS banks
 (
@@ -18,19 +18,19 @@ CREATE TABLE if not EXISTS banks
         CONSTRAINT bank_key PRIMARY KEY,
     name                  VARCHAR(255) NOT NULL,
     phone_number          VARCHAR(255) NOT NULL,
-    bank_type             INTEGER      NOT NULL,
+    bank_type             VARCHAR(100) NOT NULL,
     is_online_available   BOOLEAN      NOT NULL,
     number_of_departments INTEGER      NOT NULL,
     address               VARCHAR(255) NOT NULL,
-    FOREIGN KEY (bank_type) REFERENCES bank_type (id)
+    unique (name, phone_number, bank_type, is_online_available, number_of_departments, address)
 );
 /* Fill table banks*/
 insert into banks(name, phone_number, bank_type, is_online_available, number_of_departments, address)
-values ('PrivatBank', '+380575552233', 1, TRUE, 400, 'Kiev, st. Vesnina 15'),
-       ('AlfaBank', '+380572223344', 1, TRUE, 200, 'Kharkiv, st. Gogol 10'),
-       ('CreditBank', '+380440995633', 2, FALSE, 400, 'Poltava, st. Halamenuka 3');
+values ('PrivatBank', '+380575552233', 'GLOBAL', true, 400, 'Kiev, st. Vesnina 15'),
+       ('AlfaBank', '+380572223344', 'GLOBAL', true, 200, 'Kharkiv, st. Gogol 10'),
+       ('CreditBank', '+380440995633', 'LOCAL', false, 400, 'Poltava, st. Halamenuka 3');
 
-
+drop table currencies;
 /*Create table currencies*/
 CREATE TABLE if not EXISTS currencies
 (
@@ -38,15 +38,16 @@ CREATE TABLE if not EXISTS currencies
         CONSTRAINT currency_key NOT NULL PRIMARY KEY,
     name       VARCHAR(255) NOT NULL,
     short_name VARCHAR(255) NOT NULL,
-    purchase   MONEY        NOT NULL,
-    sale       MONEY        NOT NULL,
+    purchase   FLOAT        NOT NULL,
+    sale       FLOAT        NOT NULL,
     bank_id    INTEGER      NOT NULL,
-    FOREIGN KEY (bank_id) REFERENCES banks (id)
+    FOREIGN KEY (bank_id) REFERENCES banks (id),
+    unique (name, short_name, bank_id)
 );
 /* Fill table currencies*/
 insert into currencies (name, short_name, purchase, sale, bank_id)
 VALUES ('United States Dollar', 'USD', 28.25, 28.70, 1),
-       ('United States Dollar', 'USD', 28.25, 28.70, 1),
+       ('United States Dollar', 'USD', 28.25, 28.70, 2),
        ('United States Dollar', 'USD', 28.25, 28.70, 3),
        ('EURO', 'EUR', 33.55, 34.60, 1),
        ('EURO', 'EUR', 33.55, 34.60, 2),
