@@ -22,7 +22,7 @@ CREATE TABLE if not EXISTS banks
     is_online_available   BOOLEAN      NOT NULL,
     number_of_departments INTEGER      NOT NULL,
     address               VARCHAR(255) NOT NULL,
-    unique (name, phone_number, bank_type, is_online_available, number_of_departments, address)
+    unique (name, phone_number, address)
 );
 /* Fill table banks*/
 insert into banks(name, phone_number, bank_type, is_online_available, number_of_departments, address)

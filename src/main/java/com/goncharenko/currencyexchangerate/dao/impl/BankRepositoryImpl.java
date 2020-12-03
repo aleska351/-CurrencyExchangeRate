@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -120,11 +119,7 @@ public class BankRepositoryImpl implements BankRepository {
      */
     @Override
     public void delete(Long id) {
-
         jdbcTemplate.update("DELETE from banks  WHERE id = ?", id);
-        // delete all bank's currencies after bank deletion
-        currencyRepository.deleteAllByBankId(id);
-
     }
 
 }

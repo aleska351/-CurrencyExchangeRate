@@ -22,13 +22,15 @@ public class Currency {
         this.purchase = purchase;
         this.sale = sale;
     }
+
     public Currency(String name, String shortName, Double purchase, Double sale, Long bankId) {
         this.name = name;
         this.shortName = shortName;
         this.purchase = purchase;
         this.sale = sale;
-        this.bankId=bankId;
+        this.bankId = bankId;
     }
+
     public Currency(Long id, String name, String shortName, Double purchase, Double sale, Long bankId) {
         this.id = id;
         this.name = name;

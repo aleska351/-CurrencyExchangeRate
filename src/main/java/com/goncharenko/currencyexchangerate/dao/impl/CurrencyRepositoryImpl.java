@@ -95,7 +95,7 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
      */
     @Override
     public Optional<Currency> create(Long bankId, Currency currency) {
-        LOGGER.debug("creating new Currency with properties {} ", currency);
+
         LOGGER.info("creating new currency");
         KeyHolder keyHolder = new GeneratedKeyHolder();
         try {
@@ -103,22 +103,25 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
                 PreparedStatement statement = con.prepareStatement(
                         "INSERT INTO" +
                                 " currencies(name, short_name, purchase, sale, bank_id)" +
-                                " VALUES(?, ?, ?, ?,?)", new String[]{"id"});
+                                " VALUES(?, ?, ?, ?, ?)", new String[]{"id"});
 
                 statement.setString(1, currency.getName());
                 statement.setString(2, currency.getShortName());
                 statement.setDouble(3, currency.getPurchase());
                 statement.setDouble(4, currency.getSale());
-                statement.setLong(5, currency.getBankId());
+                statement.setLong(5, bankId);
                 return statement;
             }, keyHolder);
             long currencyId = keyHolder.getKey().longValue();
+            LOGGER.debug("creating new Currency with properties {} ", currency);
             return retrieveById(currencyId);
+
         } catch (DuplicateKeyException e) {
             LOGGER.debug("Cannot create currency with these fields because they are not unique");
             return Optional.empty();
         }
     }
+
     /**
      * This method updates currency with given id in table
      *
