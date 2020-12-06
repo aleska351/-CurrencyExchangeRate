@@ -64,7 +64,7 @@ public class BankServiceImpl implements BankService {
         List<Currency> currencies = currencyRepository.retrieveAllCurrenciesByBankId(id).orElseThrow(() -> new ResourceNotFoundException("There are no currencies in this bank with id " + id));
         BankDTO bankDTO = BankDTO.convertToDTO(bank);
         bankDTO.setCurrencyDTOList(currencies.stream().map(CurrencyDTO::convertToDTO).collect(Collectors.toList()));
-        LOGGER.info("Bank with id {} was retrieved" + id);
+        LOGGER.info("Bank with id {} was retrieved", id);
         return bankDTO;
     }
 
@@ -89,7 +89,7 @@ public class BankServiceImpl implements BankService {
     @Override
     public BankDTO update(Long bankDtoId, BankDTO retrievedBankDTO) {
         Optional<Bank> updatedBank = bankRepository.update(bankDtoId, BankDTO.convertToDomain(retrievedBankDTO));
-        LOGGER.info("{} with  was updated" + retrievedBankDTO);
+        LOGGER.info("{} with  was updated",  retrievedBankDTO);
         return BankDTO.convertToDTO(updatedBank.orElseThrow(() -> {
             LOGGER.debug("{} can't be updated ", retrievedBankDTO);
             throw new ResourceNotFoundException("Bank with id " + bankDtoId + " is not found");
@@ -102,7 +102,7 @@ public class BankServiceImpl implements BankService {
         bankRepository.retrieveById(id).ifPresentOrElse(bank -> {
             currencyRepository.deleteAllByBankId(id);
             bankRepository.delete(id);
-            LOGGER.info("Bank with id {} was deleted" + id);
+            LOGGER.info("Bank with id {} was deleted", id);
         }, () -> {
             LOGGER.debug("Bank was not deleted");
             throw new ResourceNotFoundException("Bank with id " + id + " is not found");

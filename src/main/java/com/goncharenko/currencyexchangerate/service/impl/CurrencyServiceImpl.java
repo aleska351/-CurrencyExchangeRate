@@ -2,7 +2,6 @@ package com.goncharenko.currencyexchangerate.service.impl;
 
 import com.goncharenko.currencyexchangerate.dao.BankRepository;
 import com.goncharenko.currencyexchangerate.dao.CurrencyRepository;
-import com.goncharenko.currencyexchangerate.domain.Bank;
 import com.goncharenko.currencyexchangerate.domain.Currency;
 import com.goncharenko.currencyexchangerate.dto.CurrencyDTO;
 import com.goncharenko.currencyexchangerate.exceptions.ResourceNotFoundException;
@@ -37,7 +36,7 @@ public class CurrencyServiceImpl implements CurrencyService {
                     LOGGER.debug("There is no currency with id {} ", id);
                     throw new ResourceNotFoundException("There are no currencies in this bank with id " + id);
                 });
-        LOGGER.info("Currency with id {} was retrieved" + id);
+        LOGGER.info("Currency with id {} was retrieved", id);
         return CurrencyDTO.convertToDTO(currency);
     }
 
@@ -69,6 +68,7 @@ public class CurrencyServiceImpl implements CurrencyService {
     public CurrencyDTO create(Long bankId, CurrencyDTO currencyDTO) {
         if (bankRepository.retrieveById(bankId).isPresent()) {
             Optional<Currency> createdCurrency = currencyRepository.create(bankId, CurrencyDTO.convertToDomain(currencyDTO));
+            LOGGER.info("Currency {} was created", createdCurrency.get());
             return CurrencyDTO.convertToDTO(createdCurrency.get());
         }
         LOGGER.debug("{} can't be created ", currencyDTO);
@@ -79,6 +79,7 @@ public class CurrencyServiceImpl implements CurrencyService {
     @Override
     public CurrencyDTO update(Long bankId, CurrencyDTO currencyDTO) {
         Optional<Currency> updatedCurrency = currencyRepository.update(bankId, CurrencyDTO.convertToDomain(currencyDTO));
+        LOGGER.info("{} with  was updated", currencyDTO);
         return CurrencyDTO.convertToDTO(updatedCurrency.orElseThrow(() -> {
             LOGGER.debug("{} can't be updated ", currencyDTO);
             throw new ResourceNotFoundException("Bank with id " + bankId + " is not found");
@@ -90,7 +91,9 @@ public class CurrencyServiceImpl implements CurrencyService {
     public void delete(Long id) {
         currencyRepository.retrieveById(id).ifPresentOrElse(currency -> {
             currencyRepository.delete(id);
+            LOGGER.info("Currency with id {} was deleted", id);
         }, () -> {
+            LOGGER.debug("Currency with id {} can't be updated ", id);
             throw new ResourceNotFoundException("Currency with id " + id + " is not found");
         });
     }
