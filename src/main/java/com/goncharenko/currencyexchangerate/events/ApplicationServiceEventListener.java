@@ -26,10 +26,10 @@ public class ApplicationServiceEventListener {
         this.currencyService = currencyService;
     }
 
-    @Bean
+
     @EventListener(ApplicationReadyEventListener.class)
     public void checkService() {
-        List<CurrencyDTO> currencies = new ArrayList<>();
+    /*    List<CurrencyDTO> currencies = new ArrayList<>();
         currencies.add(new CurrencyDTO("Zlota", "Zl", 6.25, 6.33));
         currencies.add(new CurrencyDTO("Crona", "Cz", 6.25, 6.33));
         BankDTO createdBankDTO = bankService.create(new BankDTO("NewBankDTO", "+3456536890", Bank.Type.GLOBAL, true, 67, "Dnepr", currencies));
@@ -49,5 +49,6 @@ public class ApplicationServiceEventListener {
         LOGGER.info("DeleteCurrencyDTO by id " + createdCurrencyDTO.getId());
 
 
+    }*/
     }
 }

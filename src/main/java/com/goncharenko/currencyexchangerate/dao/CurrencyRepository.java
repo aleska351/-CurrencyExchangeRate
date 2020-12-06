@@ -5,13 +5,13 @@ import com.goncharenko.currencyexchangerate.domain.Currency;
 import java.util.List;
 import java.util.Optional;
 
-public interface CurrencyRepository {
+public interface CurrencyRepository extends Paginated<Currency> {
 
     Optional<Currency> retrieveById(Long id);
 
-    Optional<List<Currency>> retrieveAll();
+    List<Currency> retrieveAll();
 
-    Optional<List<Currency>> retrieveAllCurrenciesByBankId(Long bankId);
+    List<Currency> retrieveAllCurrenciesByBankId(Long bankId);
 
     Optional<Currency> create(Long bankId, Currency currency);
 

@@ -8,7 +8,7 @@ public class Bank {
     private Long id;
     private String name;
     private String phoneNumber;
-    private Bank.Type bankType;
+    private Type bankType;
     private Boolean isOnlineAvailable;
     private Integer numberOfDepartments;
     private String address;
@@ -17,7 +17,7 @@ public class Bank {
 
     }
 
-    public Bank(String name, String phoneNumber, Bank.Type bankType, Boolean isOnlineAvailable, Integer numberOfDepartments, String address) {
+    public Bank(String name, String phoneNumber, Type bankType, Boolean isOnlineAvailable, Integer numberOfDepartments, String address) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.bankType = bankType;
@@ -27,7 +27,7 @@ public class Bank {
     }
 
 
-    public Bank(Long id, String name, String phoneNumber, Bank.Type bankType, boolean isOnlineAvailable, Integer numberOfDepartments, String address) {
+    public Bank(Long id, String name, String phoneNumber, Type bankType, boolean isOnlineAvailable, Integer numberOfDepartments, String address) {
         this.id = id;
         this.name = name;
         this.phoneNumber = phoneNumber;
@@ -61,11 +61,11 @@ public class Bank {
         this.phoneNumber = phoneNumber;
     }
 
-    public Bank.Type getBankType() {
+    public Type getBankType() {
         return bankType;
     }
 
-    public void setBankType(Bank.Type bankType) {
+    public void setBankType(Type bankType) {
         this.bankType = bankType;
     }
 
@@ -124,15 +124,5 @@ public class Bank {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, phoneNumber, bankType, isOnlineAvailable, numberOfDepartments, address);
-    }
-
-    public enum Type {
-
-        GLOBAL(),
-        LOCAL();
-
-        Type() {
-
-        }
     }
 }

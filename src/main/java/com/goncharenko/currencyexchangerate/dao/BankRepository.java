@@ -7,10 +7,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public interface BankRepository {
+public interface BankRepository extends Paginated<Bank> {
     Optional<Bank> retrieveById(Long id);
 
-    Optional<List<Bank>> retrieveAll();
+    List<Bank> retrieveAll();
 
     Optional<Bank> create(Bank bank);
 
