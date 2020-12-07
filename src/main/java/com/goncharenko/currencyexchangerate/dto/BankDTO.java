@@ -1,6 +1,7 @@
 package com.goncharenko.currencyexchangerate.dto;
 
 import com.goncharenko.currencyexchangerate.domain.Bank;
+import com.goncharenko.currencyexchangerate.domain.Type;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -11,14 +12,14 @@ public class BankDTO {
     private Long id;
     private String name;
     private String phoneNumber;
-    private Bank.Type bankType;
+    private Type bankType;
     private Boolean isOnlineAvailable;
     private Integer numberOfDepartments;
     private String address;
     private List<CurrencyDTO> currencyDTOList;
 
 
-    public BankDTO(String name, String phoneNumber, Bank.Type bankType, Boolean isOnlineAvailable, Integer numberOfDepartments, String address, List<CurrencyDTO> currencyDTOList) {
+    public BankDTO(String name, String phoneNumber, Type bankType, Boolean isOnlineAvailable, Integer numberOfDepartments, String address, List<CurrencyDTO> currencyDTOList) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.bankType = bankType;
@@ -28,7 +29,7 @@ public class BankDTO {
         this.currencyDTOList = currencyDTOList;
     }
 
-    public BankDTO(Long id, String name, String phoneNumber, Bank.Type bankType, Boolean isOnlineAvailable, Integer numberOfDepartments, String address) {
+    public BankDTO(Long id, String name, String phoneNumber, Type bankType, Boolean isOnlineAvailable, Integer numberOfDepartments, String address) {
         this.id = id;
         this.name = name;
         this.phoneNumber = phoneNumber;
@@ -62,11 +63,11 @@ public class BankDTO {
         this.phoneNumber = phoneNumber;
     }
 
-    public Bank.Type getBankType() {
+    public Type getBankType() {
         return bankType;
     }
 
-    public void setBankType(Bank.Type bankType) {
+    public void setBankType(Type bankType) {
         this.bankType = bankType;
     }
 

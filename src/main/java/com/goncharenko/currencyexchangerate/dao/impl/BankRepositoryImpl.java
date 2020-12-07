@@ -1,13 +1,11 @@
 package com.goncharenko.currencyexchangerate.dao.impl;
 
 import com.goncharenko.currencyexchangerate.dao.BankRepository;
-import com.goncharenko.currencyexchangerate.dao.CurrencyRepository;
 import com.goncharenko.currencyexchangerate.domain.Bank;
 import com.goncharenko.currencyexchangerate.mapper.BankRowMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -23,15 +21,13 @@ import java.util.Optional;
 public class BankRepositoryImpl implements BankRepository {
     private static final Logger LOGGER = LoggerFactory.getLogger(BankRepositoryImpl.class);
     private final JdbcTemplate jdbcTemplate;
-    private final CurrencyRepository currencyRepository;
-    private final BankRowMapper bankMapper;
+    private final BankRowMapper BANK_ROW_MAPPER;
 
     @Autowired
-    public BankRepositoryImpl(JdbcTemplate jdbcTemplate, CurrencyRepository currencyRepository, BankRowMapper bankMapper) {
-        this.currencyRepository = currencyRepository;
+    public BankRepositoryImpl(JdbcTemplate jdbcTemplate, BankRowMapper BANK_ROW_MAPPER) {
         this.jdbcTemplate = jdbcTemplate;
-        this.bankMapper = bankMapper;
-        LOGGER.info("================BankRepository constructor is called===========");
+        this.BANK_ROW_MAPPER = BANK_ROW_MAPPER;
+        LOGGER.debug("================BankRepository constructor is called===========");
     }
 
     /**
@@ -42,11 +38,11 @@ public class BankRepositoryImpl implements BankRepository {
      */
     @Override
     public Optional<Bank> retrieveById(Long id) {
-        LOGGER.info("retrieve bank with id {} ", id);
+        LOGGER.debug("retrieve bank with id {} ", id);
         try {
             return Optional.of(
                     jdbcTemplate.queryForObject
-                            ("SELECT * FROM banks where id = ?", bankMapper, id));
+                            ("SELECT * FROM banks where id = ?", BANK_ROW_MAPPER, id));
         } catch (EmptyResultDataAccessException e) {
             LOGGER.debug("Empty result, no bank found with given ID ");
             return Optional.empty();
@@ -59,14 +55,9 @@ public class BankRepositoryImpl implements BankRepository {
      * @return all banks from table banks or Optional.empty() if table is empty.
      */
     @Override
-    public Optional<List<Bank>> retrieveAll() {
-        LOGGER.info("retrieve all banks");
-        try {
-            return Optional.of(jdbcTemplate.query("SELECT * FROM banks", bankMapper));
-        } catch (DataAccessException e) {
-            LOGGER.debug("Empty result, banks table is empty ");
-            return Optional.empty();
-        }
+    public List<Bank> retrieveAll() {
+        LOGGER.debug("retrieve all banks");
+        return jdbcTemplate.query("SELECT * FROM banks", BANK_ROW_MAPPER);
     }
 
     /**
@@ -105,6 +96,7 @@ public class BankRepositoryImpl implements BankRepository {
      */
     @Override
     public Optional<Bank> update(Long id, Bank bank) {
+        LOGGER.debug("updating bank with id {} ", id);
         jdbcTemplate.update("UPDATE banks" +
                         " SET name = ?, phone_number = ?, bank_type = ?,is_online_available = ?, number_of_departments =? , address =?  WHERE id = ?",
                 bank.getName(), bank.getPhoneNumber(), String.valueOf(bank.getBankType()), bank.getOnlineAvailable(),
@@ -119,7 +111,14 @@ public class BankRepositoryImpl implements BankRepository {
      */
     @Override
     public void delete(Long id) {
+        LOGGER.debug("deleting bank with id {} ", id);
         jdbcTemplate.update("DELETE from banks  WHERE id = ?", id);
     }
 
+    @Override
+    public List<Bank> getPaginatedData(int pageNumber, int pageSize) {
+        int limit = pageSize;
+        int offset = pageNumber * pageSize;
+        return jdbcTemplate.query("select * from banks limit ? offset ?", BANK_ROW_MAPPER, limit, offset);
+    }
 }

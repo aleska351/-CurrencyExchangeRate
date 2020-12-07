@@ -5,7 +5,6 @@ import com.goncharenko.currencyexchangerate.domain.Currency;
 import com.goncharenko.currencyexchangerate.mapper.CurrencyRowMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -22,15 +21,12 @@ import java.util.Optional;
 public class CurrencyRepositoryImpl implements CurrencyRepository {
     private static final Logger LOGGER = LoggerFactory.getLogger(CurrencyRepositoryImpl.class);
     private final JdbcTemplate jdbcTemplate;
-    private final CurrencyRowMapper currencyRowMapper;
+    private final CurrencyRowMapper CURRENCY_ROW_MAPPER;
 
-
-    public CurrencyRepositoryImpl(JdbcTemplate jdbcTemplate, CurrencyRowMapper currencyRowMapper) {
+    public CurrencyRepositoryImpl(JdbcTemplate jdbcTemplate, CurrencyRowMapper CURRENCY_ROW_MAPPER) {
         this.jdbcTemplate = jdbcTemplate;
-        this.currencyRowMapper = currencyRowMapper;
-        LOGGER.info("================CurrencyRepository constructor is called===========");
-
-
+        this.CURRENCY_ROW_MAPPER = CURRENCY_ROW_MAPPER;
+        LOGGER.debug("================CurrencyRepository constructor is called===========");
     }
 
     /**
@@ -41,10 +37,10 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
      */
     @Override
     public Optional<Currency> retrieveById(Long id) {
-        LOGGER.info("retrieve currency with id {} ", id);
+        LOGGER.debug("retrieve currency with id {} ", id);
         try {
             return Optional.of(jdbcTemplate.queryForObject
-                    ("SELECT * FROM currencies where id = ?", currencyRowMapper, id));
+                    ("SELECT * FROM currencies where id = ?", CURRENCY_ROW_MAPPER, id));
         } catch (EmptyResultDataAccessException e) {
             LOGGER.debug("Empty result, no currency found with given ID ");
             return Optional.empty();
@@ -54,36 +50,26 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
     /**
      * This method retrieves all currencies from table.
      *
-     * @return List of currencies from table or Optional.empty() if table is empty.
+     * @return List of currencies from table.
      */
     @Override
-    public Optional<List<Currency>> retrieveAll() {
-        LOGGER.info("retrieve all currencies");
-        try {
-            return Optional.of(jdbcTemplate.query
-                    ("SELECT * FROM currencies", currencyRowMapper));
-        } catch (DataAccessException e) {
-            LOGGER.debug("Empty result, currencies table is empty ");
-            return Optional.empty();
-        }
+    public List<Currency> retrieveAll() {
+        LOGGER.debug("retrieve all currencies");
+        return jdbcTemplate.query
+                ("SELECT * FROM currencies", CURRENCY_ROW_MAPPER);
     }
 
     /**
      * This method retrieves all currencies by given bank_id
      *
      * @param bankId bank ID to which this currencies belongs
-     * @return current List of currencies or Optional.empty() if currency with given bank_id not found
+     * @return current List of currencies by given bank id.
      */
     @Override
-    public Optional<List<Currency>> retrieveAllCurrenciesByBankId(Long bankId) {
-        LOGGER.info("retrieve all currencies by bank_id");
-        try {
-            return Optional.of(jdbcTemplate.query
-                    ("SELECT * FROM currencies where bank_id=?", currencyRowMapper, bankId));
-        } catch (DataAccessException e) {
-            LOGGER.debug("Empty result, none currency in this bank");
-            return Optional.empty();
-        }
+    public List<Currency> retrieveAllCurrenciesByBankId(Long bankId) {
+        LOGGER.debug("retrieve all currencies by bank_id");
+        return jdbcTemplate.query
+                ("SELECT * FROM currencies where bank_id=?", CURRENCY_ROW_MAPPER, bankId);
     }
 
     /**
@@ -95,7 +81,7 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
      */
     @Override
     public Optional<Currency> create(Long bankId, Currency currency) {
-
+        LOGGER.debug("creating new Currency with properties {} ", currency);
         LOGGER.info("creating new currency");
         KeyHolder keyHolder = new GeneratedKeyHolder();
         try {
@@ -131,7 +117,7 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
      */
     @Override
     public Optional<Currency> update(Long id, Currency currency) {
-        LOGGER.info("updating currency with id {} ", id);
+        LOGGER.debug("updating currency with id {} ", id);
         jdbcTemplate.update("UPDATE currencies" +
                         " SET name = ?," +
                         "short_name = ?," +
@@ -149,7 +135,7 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
      */
     @Override
     public void delete(Long id) {
-        LOGGER.info("deleting currencies with id {} ", id);
+        LOGGER.debug("deleting currency with id {} ", id);
         jdbcTemplate.update("DELETE from currencies  WHERE id = ?", id);
     }
 
@@ -160,7 +146,14 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
      */
     @Override
     public void deleteAllByBankId(Long bankId) {
-        LOGGER.info("deleting all currencies by bank id{} ", bankId);
+        LOGGER.debug("deleting all currencies by bank id{} ", bankId);
         jdbcTemplate.update("DELETE FROM currencies where bank_id = ?", bankId);
+    }
+
+    @Override
+    public List<Currency> getPaginatedData(int pageNumber, int pageSize) {
+        int limit = pageSize;
+        int offset = pageNumber * pageSize;
+        return jdbcTemplate.query("select * from currencies limit ? offset ?", CURRENCY_ROW_MAPPER, limit, offset);
     }
 }
