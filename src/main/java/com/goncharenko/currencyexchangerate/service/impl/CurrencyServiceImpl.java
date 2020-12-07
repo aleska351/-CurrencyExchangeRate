@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,13 +20,12 @@ import java.util.stream.Collectors;
 public class CurrencyServiceImpl implements CurrencyService {
     private static final Logger LOGGER = LoggerFactory.getLogger(BankServiceImpl.class);
     private final CurrencyRepository currencyRepository;
+    private final BankRepository bankRepository;
 
     public CurrencyServiceImpl(CurrencyRepository currencyRepository, BankRepository bankRepository) {
         this.currencyRepository = currencyRepository;
         this.bankRepository = bankRepository;
     }
-
-    private final BankRepository bankRepository;
 
     @Transactional
     @Override
@@ -34,7 +34,7 @@ public class CurrencyServiceImpl implements CurrencyService {
                 () ->
                 {
                     LOGGER.debug("There is no currency with id {} ", id);
-                    throw new ResourceNotFoundException("There are no currencies in this bank with id " + id);
+                    throw new ResourceNotFoundException("There are no currencies with id " + id);
                 });
         LOGGER.info("Currency with id {} was retrieved", id);
         return CurrencyDTO.convertToDTO(currency);
@@ -43,24 +43,25 @@ public class CurrencyServiceImpl implements CurrencyService {
     @Transactional
     @Override
     public List<CurrencyDTO> retrieveAll() {
-
-        List<Currency> banks = currencyRepository.retrieveAll().orElseThrow(() -> {
+        List<Currency> currencies = currencyRepository.retrieveAll();
+        if (CollectionUtils.isEmpty(currencies)) {
             LOGGER.debug("There are no currencies in table ");
             throw new ResourceNotFoundException("There are no currencies in table");
-        });
+        }
         LOGGER.info("Retrieved all currencies");
-        return banks.stream().map(CurrencyDTO::convertToDTO).collect(Collectors.toList());
+        return currencies.stream().map(CurrencyDTO::convertToDTO).collect(Collectors.toList());
     }
 
     @Transactional
     @Override
     public List<CurrencyDTO> retrieveAllCurrenciesByBankId(Long bankId) {
-        List<Currency> banks = currencyRepository.retrieveAllCurrenciesByBankId(bankId).orElseThrow(() -> {
+        List<Currency> currencies = currencyRepository.retrieveAllCurrenciesByBankId(bankId);
+        if (CollectionUtils.isEmpty(currencies)) {
             LOGGER.debug("There are no currencies with  bank id {} in table ", bankId);
             throw new ResourceNotFoundException("There are no currencies with this bank id ");
-        });
+        }
         LOGGER.info("Retrieved all currencies with bank id {} ", bankId);
-        return banks.stream().map(CurrencyDTO::convertToDTO).collect(Collectors.toList());
+        return currencies.stream().map(CurrencyDTO::convertToDTO).collect(Collectors.toList());
     }
 
     @Transactional
@@ -68,7 +69,7 @@ public class CurrencyServiceImpl implements CurrencyService {
     public CurrencyDTO create(Long bankId, CurrencyDTO currencyDTO) {
         if (bankRepository.retrieveById(bankId).isPresent()) {
             Optional<Currency> createdCurrency = currencyRepository.create(bankId, CurrencyDTO.convertToDomain(currencyDTO));
-            LOGGER.info("Currency {} was created", createdCurrency.get());
+            LOGGER.info("{} was created", currencyDTO);
             return CurrencyDTO.convertToDTO(createdCurrency.get());
         }
         LOGGER.debug("{} can't be created ", currencyDTO);
@@ -79,7 +80,7 @@ public class CurrencyServiceImpl implements CurrencyService {
     @Override
     public CurrencyDTO update(Long bankId, CurrencyDTO currencyDTO) {
         Optional<Currency> updatedCurrency = currencyRepository.update(bankId, CurrencyDTO.convertToDomain(currencyDTO));
-        LOGGER.info("{} with  was updated", currencyDTO);
+        LOGGER.info("{} was updated", currencyDTO);
         return CurrencyDTO.convertToDTO(updatedCurrency.orElseThrow(() -> {
             LOGGER.debug("{} can't be updated ", currencyDTO);
             throw new ResourceNotFoundException("Bank with id " + bankId + " is not found");
@@ -93,7 +94,7 @@ public class CurrencyServiceImpl implements CurrencyService {
             currencyRepository.delete(id);
             LOGGER.info("Currency with id {} was deleted", id);
         }, () -> {
-            LOGGER.debug("Currency with id {} can't be updated ", id);
+            LOGGER.debug("Currency with id {} cannot be delete", id);
             throw new ResourceNotFoundException("Currency with id " + id + " is not found");
         });
     }
