@@ -14,4 +14,10 @@ public class GlobalControllerExceptionHandler {
     public ResponseEntity<HttpErrorBody> handlerResourceNotFound(ResourceNotFoundException exception) {
         return ResponseEntity.status(404).body(new HttpErrorBody(exception.getMessage()));
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<HttpErrorBody> handlerResourceNotFound(Exception exception) {
+        return ResponseEntity.status(500).body(new HttpErrorBody(exception.getMessage()));
+    }
 }

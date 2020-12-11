@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -46,7 +47,7 @@ public class CurrencyServiceImpl implements CurrencyService {
         List<Currency> currencies = currencyRepository.retrieveAll();
         if (CollectionUtils.isEmpty(currencies)) {
             LOGGER.debug("There are no currencies in table ");
-            throw new ResourceNotFoundException("There are no currencies in table");
+            return Collections.emptyList();
         }
         LOGGER.info("Retrieved all currencies");
         return currencies.stream().map(CurrencyDTO::convertToDTO).collect(Collectors.toList());
@@ -58,7 +59,7 @@ public class CurrencyServiceImpl implements CurrencyService {
         List<Currency> currencies = currencyRepository.retrieveAllCurrenciesByBankId(bankId);
         if (CollectionUtils.isEmpty(currencies)) {
             LOGGER.debug("There are no currencies with  bank id {} in table ", bankId);
-            throw new ResourceNotFoundException("There are no currencies with this bank id ");
+            throw new ResourceNotFoundException("There are no currencies with bank id ");
         }
         LOGGER.info("Retrieved all currencies with bank id {} ", bankId);
         return currencies.stream().map(CurrencyDTO::convertToDTO).collect(Collectors.toList());
@@ -97,5 +98,15 @@ public class CurrencyServiceImpl implements CurrencyService {
             LOGGER.debug("Currency with id {} cannot be delete", id);
             throw new ResourceNotFoundException("Currency with id " + id + " is not found");
         });
+    }
+
+    @Override
+    public void deleteByBankId(Long bankId) {
+        if (!CollectionUtils.isEmpty(currencyRepository.retrieveAllCurrenciesByBankId(bankId))) {
+            currencyRepository.deleteAllByBankId(bankId);
+            LOGGER.info("All currencies with bank id {} was deleted", bankId);
+        }
+        LOGGER.debug("There are no currencies with bank id {} ", bankId);
+        throw new ResourceNotFoundException("There are no currencies with bank id " + bankId);
     }
 }

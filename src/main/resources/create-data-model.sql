@@ -1,15 +1,3 @@
-drop table bank_type;
-/*Create table bank_type*/
--- CREATE TABLE if not EXISTS bank_type
--- (
---     id   SERIAL       NOT NULL PRIMARY KEY,
---     type VARCHAR(100) NOT NULL
--- );
-/* Fill table bank_type*/
--- INSERT INTO bank_type (type)
--- VALUES ('GLOBAL');
--- INSERT INTO bank_type (type)
--- VALUES ('LOCAL');
 drop table banks;
 /*Create table banks*/
 CREATE TABLE if not EXISTS banks
@@ -22,7 +10,7 @@ CREATE TABLE if not EXISTS banks
     is_online_available   BOOLEAN      NOT NULL,
     number_of_departments INTEGER      NOT NULL,
     address               VARCHAR(255) NOT NULL,
-    unique (name, phone_number, address)
+    unique (name)
 );
 /* Fill table banks*/
 insert into banks(name, phone_number, bank_type, is_online_available, number_of_departments, address)
@@ -42,7 +30,7 @@ CREATE TABLE if not EXISTS currencies
     sale       FLOAT        NOT NULL,
     bank_id    INTEGER      NOT NULL,
     FOREIGN KEY (bank_id) REFERENCES banks (id),
-    unique (name, short_name, bank_id)
+    unique (name, bank_id)
 );
 /* Fill table currencies*/
 insert into currencies (name, short_name, purchase, sale, bank_id)
@@ -62,19 +50,15 @@ VALUES ('United States Dollar', 'USD', 28.25, 28.70, 1),
 
 
 /* Select data from tables by id */
-SELECT *
-FROM banks
+SELECT * FROM banks
 where id = 1;
-SELECT *
-FROM currencies
+SELECT * FROM currencies
 where id = 4;
 
 
 /* Select all data from tables*/
-SELECT *
-FROM banks;
-SELECT *
-FROM currencies;
+SELECT * FROM banks;
+SELECT * FROM currencies;
 
 
 /* Update current data on table in whole or in part*/
@@ -92,19 +76,15 @@ SET purchase=22.11,
 WHERE id = 3;
 
 /*Delete data from tables by id */
-DELETE
-FROM banks
+DELETE FROM banks
 WHERE id = 3;
-DELETE
-FROM currencies
+DELETE FROM currencies
 WHERE id = 6;
 
 /* Delete all data from tables*/
 TRUNCATE TABLE banks;
 TRUNCATE TABLE currencies;
-TRUNCATE TABLE bank_type;
 
 /* Delete all tables */
 drop table banks;
 drop table currencies;
-drop table bank_type;

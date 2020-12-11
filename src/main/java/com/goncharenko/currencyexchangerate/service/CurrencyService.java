@@ -1,7 +1,6 @@
 package com.goncharenko.currencyexchangerate.service;
 
 import com.goncharenko.currencyexchangerate.dto.CurrencyDTO;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -18,5 +17,7 @@ public interface CurrencyService {
     CurrencyDTO update(Long id, CurrencyDTO currencyDTO);
 
     void delete(Long id);
+
+    void deleteByBankId(Long bankId);
 
 }

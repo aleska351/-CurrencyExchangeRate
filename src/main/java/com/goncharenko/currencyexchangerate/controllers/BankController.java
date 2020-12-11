@@ -1,7 +1,6 @@
 package com.goncharenko.currencyexchangerate.controllers;
 
 import com.goncharenko.currencyexchangerate.dto.BankDTO;
-import com.goncharenko.currencyexchangerate.dto.CurrencyDTO;
 import com.goncharenko.currencyexchangerate.service.BankService;
 import com.goncharenko.currencyexchangerate.service.CurrencyService;
 import org.springframework.http.HttpStatus;
@@ -15,7 +14,6 @@ import java.util.List;
 public class BankController {
     private final BankService bankService;
     private final CurrencyService currencyService;
-
 
     public BankController(BankService bankService, CurrencyService currencyService) {
         this.bankService = bankService;
@@ -49,11 +47,5 @@ public class BankController {
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT).build();
     }
-
-    @GetMapping(path = "/{id}/currencies/")
-    public ResponseEntity<List<CurrencyDTO>> getCurrencyByBankId(@PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(currencyService.retrieveAllCurrenciesByBankId(id));
-    }
-
 }
 

@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -77,7 +78,7 @@ public class BankServiceImpl implements BankService {
         List<Bank> retrievedBanks = bankRepository.retrieveAll();
         if (CollectionUtils.isEmpty(retrievedBanks)) {
             LOGGER.debug("There are no banks in table ");
-            throw new ResourceNotFoundException("There are no banks in table");
+            return  Collections.emptyList();
         }
         List<BankDTO> bankDTOList = retrievedBanks.stream().map(BankDTO::convertToDTO).collect(Collectors.toList());
         for (BankDTO retrievedBankDTO : bankDTOList) {

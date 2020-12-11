@@ -1,11 +1,9 @@
 package com.goncharenko.currencyexchangerate.dto;
 
 import com.goncharenko.currencyexchangerate.domain.Currency;
-import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
-@Component
 public class CurrencyDTO {
     private Long id;
     private String name;

@@ -9,33 +9,41 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/currencies")
+@RequestMapping(path = "/banks/{bankId}/currencies")
 public class CurrencyController {
+
     private final CurrencyService currencyService;
 
     public CurrencyController(CurrencyService currencyService) {
         this.currencyService = currencyService;
     }
 
-    @PostMapping(value = "/{id}")
-    public ResponseEntity<CurrencyDTO> create(@PathVariable Long id, @RequestBody CurrencyDTO currencyDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(currencyService.create(id, currencyDTO));
+    @PostMapping
+    public ResponseEntity<CurrencyDTO> create(@PathVariable Long bankId, @RequestBody CurrencyDTO currencyDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(currencyService.create(bankId, currencyDTO));
     }
 
-    @GetMapping
-    public ResponseEntity<List<CurrencyDTO>> getCurrencies() {
-        return ResponseEntity.status(HttpStatus.OK).body(currencyService.retrieveAll());
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<CurrencyDTO> update(@PathVariable("id") Long id,
+                                              @RequestBody CurrencyDTO currencyDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(currencyService.update(id, currencyDTO));
     }
 
-    @GetMapping(path = "/{id}")
+    @GetMapping(value = "/{id}")
     public ResponseEntity<CurrencyDTO> getCurrency(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(currencyService.retrieveById(id));
     }
 
-    @PutMapping(value = "/{id}")
-    public ResponseEntity<CurrencyDTO> update(@PathVariable Long id,
-                                              @RequestBody CurrencyDTO currencyDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(currencyService.update(id, currencyDTO));
+    @GetMapping
+    public ResponseEntity<List<CurrencyDTO>> getAllCurrencyByBankId(@PathVariable Long bankId) {
+        return ResponseEntity.status(HttpStatus.OK).body(currencyService.retrieveAllCurrenciesByBankId(bankId));
+    }
+
+    @DeleteMapping
+    public ResponseEntity<String> deleteByBankId(@PathVariable Long bankId) {
+        currencyService.deleteByBankId(bankId);
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT).build();
     }
 
     @DeleteMapping(value = "/{id}")
