@@ -9,26 +9,19 @@ import java.util.Objects;
 public class CurrencyDTO {
     private Long id;
     private String name;
-    private String shortNameCurrency;
-    private Double purchaseCurrency;
-    private Double saleCurrency;
+    private String shortName;
+    private Double purchase;
+    private Double sale;
 
     public CurrencyDTO() {
     }
 
-    public CurrencyDTO(String name, String shortNameCurrency, Double purchaseCurrency, Double saleCurrency) {
-        this.name = name;
-        this.shortNameCurrency = shortNameCurrency;
-        this.purchaseCurrency = purchaseCurrency;
-        this.saleCurrency = saleCurrency;
-    }
-
-    public CurrencyDTO(Long id, String name, String shortNameCurrency, Double purchaseCurrency, Double saleCurrency) {
+    public CurrencyDTO(Long id, String name, String shortName, Double purchase, Double sale) {
         this.id = id;
         this.name = name;
-        this.shortNameCurrency = shortNameCurrency;
-        this.purchaseCurrency = purchaseCurrency;
-        this.saleCurrency = saleCurrency;
+        this.shortName = shortName;
+        this.purchase = purchase;
+        this.sale = sale;
     }
 
     public Long getId() {
@@ -47,28 +40,28 @@ public class CurrencyDTO {
         this.name = name;
     }
 
-    public String getShortNameCurrency() {
-        return shortNameCurrency;
+    public String getShortName() {
+        return shortName;
     }
 
-    public void setShortNameCurrency(String shortNameCurrency) {
-        this.shortNameCurrency = shortNameCurrency;
+    public void setShortName(String shortName) {
+        this.shortName = shortName;
     }
 
-    public Double getPurchaseCurrency() {
-        return purchaseCurrency;
+    public Double getPurchase() {
+        return purchase;
     }
 
-    public void setPurchaseCurrency(Double purchaseCurrency) {
-        this.purchaseCurrency = purchaseCurrency;
+    public void setPurchase(Double purchase) {
+        this.purchase = purchase;
     }
 
-    public Double getSaleCurrency() {
-        return saleCurrency;
+    public Double getSale() {
+        return sale;
     }
 
-    public void setSaleCurrency(Double saleCurrency) {
-        this.saleCurrency = saleCurrency;
+    public void setSale(Double sale) {
+        this.sale = sale;
     }
 
     @Override
@@ -78,14 +71,14 @@ public class CurrencyDTO {
         CurrencyDTO that = (CurrencyDTO) o;
         return Objects.equals(id, that.id) &&
                 Objects.equals(name, that.name) &&
-                Objects.equals(shortNameCurrency, that.shortNameCurrency) &&
-                Objects.equals(purchaseCurrency, that.purchaseCurrency) &&
-                Objects.equals(saleCurrency, that.saleCurrency);
+                Objects.equals(shortName, that.shortName) &&
+                Objects.equals(purchase, that.purchase) &&
+                Objects.equals(sale, that.sale);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, shortNameCurrency, purchaseCurrency, saleCurrency);
+        return Objects.hash(id, name, shortName, purchase, sale);
     }
 
     @Override
@@ -93,14 +86,14 @@ public class CurrencyDTO {
         return "CurrencyDTO{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", shortNameCurrency='" + shortNameCurrency + '\'' +
-                ", purchaseCurrency=" + purchaseCurrency +
-                ", saleCurrency=" + saleCurrency +
+                ", shortNameCurrency='" + shortName + '\'' +
+                ", purchaseCurrency=" + purchase +
+                ", saleCurrency=" + sale +
                 '}';
     }
 
     public static Currency convertToDomain(CurrencyDTO currencyDTO) {
-        return new Currency(currencyDTO.getName(), currencyDTO.getShortNameCurrency(), currencyDTO.getPurchaseCurrency(), currencyDTO.getSaleCurrency());
+        return new Currency(currencyDTO.getName(), currencyDTO.getShortName(), currencyDTO.getPurchase(), currencyDTO.getSale());
     }
 
     public static CurrencyDTO convertToDTO(Currency createdCurrency) {

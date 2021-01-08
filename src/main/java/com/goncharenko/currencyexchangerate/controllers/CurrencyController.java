@@ -24,12 +24,12 @@ public class CurrencyController {
 
     @GetMapping
     public ResponseEntity<List<CurrencyDTO>> getCurrencies() {
-        return ResponseEntity.status(HttpStatus.OK).body(currencyService.retrieveAll());
+        return ResponseEntity.status(HttpStatus.OK).body(currencyService.getAll());
     }
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<CurrencyDTO> getCurrency(@PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(currencyService.retrieveById(id));
+        return ResponseEntity.status(HttpStatus.OK).body(currencyService.getById(id));
     }
 
     @PutMapping(value = "/{id}")

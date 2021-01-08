@@ -2,7 +2,6 @@ package com.goncharenko.currencyexchangerate.domain;
 
 import java.util.Objects;
 
-
 public class Bank {
 
     private Long id;
@@ -18,17 +17,6 @@ public class Bank {
     }
 
     public Bank(String name, String phoneNumber, Type bankType, Boolean isOnlineAvailable, Integer numberOfDepartments, String address) {
-        this.name = name;
-        this.phoneNumber = phoneNumber;
-        this.bankType = bankType;
-        this.isOnlineAvailable = isOnlineAvailable;
-        this.numberOfDepartments = numberOfDepartments;
-        this.address = address;
-    }
-
-
-    public Bank(Long id, String name, String phoneNumber, Type bankType, boolean isOnlineAvailable, Integer numberOfDepartments, String address) {
-        this.id = id;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.bankType = bankType;
@@ -112,13 +100,13 @@ public class Bank {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Bank bank = (Bank) o;
-        return id.equals(bank.id) &&
-                name.equals(bank.name) &&
-                phoneNumber.equals(bank.phoneNumber) &&
+        return Objects.equals(id, bank.id) &&
+                Objects.equals(name, bank.name) &&
+                Objects.equals(phoneNumber, bank.phoneNumber) &&
                 bankType == bank.bankType &&
-                isOnlineAvailable.equals(bank.isOnlineAvailable) &&
-                numberOfDepartments.equals(bank.numberOfDepartments) &&
-                address.equals(bank.address);
+                Objects.equals(isOnlineAvailable, bank.isOnlineAvailable) &&
+                Objects.equals(numberOfDepartments, bank.numberOfDepartments) &&
+                Objects.equals(address, bank.address);
     }
 
     @Override

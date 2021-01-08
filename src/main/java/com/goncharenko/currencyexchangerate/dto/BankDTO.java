@@ -18,8 +18,8 @@ public class BankDTO {
     private String address;
     private List<CurrencyDTO> currencyDTOList;
 
-
-    public BankDTO(String name, String phoneNumber, Type bankType, Boolean isOnlineAvailable, Integer numberOfDepartments, String address, List<CurrencyDTO> currencyDTOList) {
+    public BankDTO(Long id, String name, String phoneNumber, Type bankType, Boolean isOnlineAvailable, Integer numberOfDepartments, String address, List<CurrencyDTO> currencyDTOList) {
+        this.id = id;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.bankType = bankType;
@@ -37,6 +37,9 @@ public class BankDTO {
         this.isOnlineAvailable = isOnlineAvailable;
         this.numberOfDepartments = numberOfDepartments;
         this.address = address;
+    }
+
+    public BankDTO() {
     }
 
     public Long getId() {
@@ -137,11 +140,8 @@ public class BankDTO {
         return Objects.hash(id, name, phoneNumber, bankType, isOnlineAvailable, numberOfDepartments, address, currencyDTOList);
     }
 
-    public BankDTO() {
-    }
-
     public static Bank convertToDomain(BankDTO bankDTO) {
-        return new Bank(bankDTO.getId(), bankDTO.getName(), bankDTO.getPhoneNumber(), bankDTO.getBankType(), bankDTO.getOnlineAvailable(), bankDTO.getNumberOfDepartments(), bankDTO.getAddress());
+        return new Bank(bankDTO.getName(), bankDTO.getPhoneNumber(), bankDTO.getBankType(), bankDTO.getOnlineAvailable(), bankDTO.getNumberOfDepartments(), bankDTO.getAddress());
     }
 
     public static BankDTO convertToDTO(Bank createdBank) {

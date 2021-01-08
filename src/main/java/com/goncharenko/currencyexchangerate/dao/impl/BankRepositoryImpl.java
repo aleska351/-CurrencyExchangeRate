@@ -11,13 +11,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
 
-@Component
+@Repository
 public class BankRepositoryImpl implements BankRepository {
     private static final Logger LOGGER = LoggerFactory.getLogger(BankRepositoryImpl.class);
     private final JdbcTemplate jdbcTemplate;
@@ -37,10 +38,10 @@ public class BankRepositoryImpl implements BankRepository {
      * @return current bank or Optional.empty() if bank with given id not found
      */
     @Override
-    public Optional<Bank> retrieveById(Long id) {
+    public Optional<Bank> getById(Long id) {
         LOGGER.debug("retrieve bank with id {} ", id);
         try {
-            return Optional.of(
+            return Optional.ofNullable(
                     jdbcTemplate.queryForObject
                             ("SELECT * FROM banks where id = ?", BANK_ROW_MAPPER, id));
         } catch (EmptyResultDataAccessException e) {
@@ -55,7 +56,7 @@ public class BankRepositoryImpl implements BankRepository {
      * @return all banks from table banks or Optional.empty() if table is empty.
      */
     @Override
-    public List<Bank> retrieveAll() {
+    public List<Bank> getAll() {
         LOGGER.debug("retrieve all banks");
         return jdbcTemplate.query("SELECT * FROM banks", BANK_ROW_MAPPER);
     }
@@ -84,7 +85,7 @@ public class BankRepositoryImpl implements BankRepository {
             return statement;
         }, keyHolder);
         long bankId = keyHolder.getKey().longValue();
-        return retrieveById(bankId);
+        return getById(bankId);
     }
 
     /**
@@ -101,7 +102,7 @@ public class BankRepositoryImpl implements BankRepository {
                         " SET name = ?, phone_number = ?, bank_type = ?,is_online_available = ?, number_of_departments =? , address =?  WHERE id = ?",
                 bank.getName(), bank.getPhoneNumber(), String.valueOf(bank.getBankType()), bank.getOnlineAvailable(),
                 bank.getNumberOfDepartments(), bank.getAddress(), id);
-        return retrieveById(id);
+        return getById(id);
     }
 
     /**
