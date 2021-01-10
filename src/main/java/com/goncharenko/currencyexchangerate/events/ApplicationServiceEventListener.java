@@ -1,18 +1,11 @@
 package com.goncharenko.currencyexchangerate.events;
 
-import com.goncharenko.currencyexchangerate.domain.Bank;
-import com.goncharenko.currencyexchangerate.dto.BankDTO;
-import com.goncharenko.currencyexchangerate.dto.CurrencyDTO;
 import com.goncharenko.currencyexchangerate.service.BankService;
 import com.goncharenko.currencyexchangerate.service.CurrencyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Component
 public class ApplicationServiceEventListener {

@@ -18,7 +18,7 @@ public class BankRowMapper implements RowMapper<Bank> {
         bank.setName(rs.getString("name"));
         bank.setPhoneNumber(rs.getString("phone_number"));
         bank.setBankType(Type.valueOf(rs.getString("bank_type")));
-        bank.setOnlineAvailable(rs.getBoolean("is_online_available"));
+        bank.setIsOnlineAvailable(rs.getBoolean("is_online_available"));
         bank.setNumberOfDepartments(rs.getInt("number_of_departments"));
         bank.setAddress(rs.getString("address"));
         return bank;

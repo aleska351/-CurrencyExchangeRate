@@ -1,6 +1,7 @@
 package com.goncharenko.currencyexchangerate.dao;
 
 import com.goncharenko.currencyexchangerate.domain.Bank;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;

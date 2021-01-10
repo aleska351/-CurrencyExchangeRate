@@ -1,7 +1,6 @@
 package com.goncharenko.currencyexchangerate.service;
 
 import com.goncharenko.currencyexchangerate.dto.CurrencyDTO;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 

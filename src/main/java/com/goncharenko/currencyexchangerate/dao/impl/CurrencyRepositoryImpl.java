@@ -3,31 +3,28 @@ package com.goncharenko.currencyexchangerate.dao.impl;
 import com.goncharenko.currencyexchangerate.dao.CurrencyRepository;
 import com.goncharenko.currencyexchangerate.domain.Currency;
 import com.goncharenko.currencyexchangerate.mapper.CurrencyRowMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
-
+@Slf4j
 @Repository
 public class CurrencyRepositoryImpl implements CurrencyRepository {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CurrencyRepositoryImpl.class);
     private final JdbcTemplate jdbcTemplate;
     private final CurrencyRowMapper CURRENCY_ROW_MAPPER;
 
     public CurrencyRepositoryImpl(JdbcTemplate jdbcTemplate, CurrencyRowMapper CURRENCY_ROW_MAPPER) {
         this.jdbcTemplate = jdbcTemplate;
         this.CURRENCY_ROW_MAPPER = CURRENCY_ROW_MAPPER;
-        LOGGER.debug("================CurrencyRepository constructor is called===========");
+        log.debug("================CurrencyRepository constructor is called===========");
     }
 
     /**
@@ -38,12 +35,12 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
      */
     @Override
     public Optional<Currency> getById(Long id) {
-        LOGGER.debug("retrieve currency with id {} ", id);
+        log.debug("retrieve currency with id {} ", id);
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject
                     ("SELECT * FROM currencies where id = ?", CURRENCY_ROW_MAPPER, id));
         } catch (EmptyResultDataAccessException e) {
-            LOGGER.debug("Empty result, no currency found with given ID ");
+            log.debug("Empty result, no currency found with given ID ");
             return Optional.empty();
         }
     }
@@ -55,7 +52,7 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
      */
     @Override
     public List<Currency> getAll() {
-        LOGGER.debug("retrieve all currencies");
+        log.debug("retrieve all currencies");
         return jdbcTemplate.query
                 ("SELECT * FROM currencies", CURRENCY_ROW_MAPPER);
     }
@@ -68,7 +65,7 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
      */
     @Override
     public List<Currency> getAllCurrenciesByBankId(Long bankId) {
-        LOGGER.debug("retrieve all currencies by bank_id");
+        log.debug("retrieve all currencies by bank_id");
         return jdbcTemplate.query
                 ("SELECT * FROM currencies where bank_id=?", CURRENCY_ROW_MAPPER, bankId);
     }
@@ -82,8 +79,8 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
      */
     @Override
     public Optional<Currency> create(Long bankId, Currency currency) {
-        LOGGER.debug("creating new Currency with properties {} ", currency);
-        LOGGER.info("creating new currency");
+        log.debug("creating new Currency with properties {} ", currency);
+        log.info("creating new currency");
         KeyHolder keyHolder = new GeneratedKeyHolder();
         try {
             jdbcTemplate.update(con -> {
@@ -100,11 +97,11 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
                 return statement;
             }, keyHolder);
             long currencyId = keyHolder.getKey().longValue();
-            LOGGER.debug("creating new Currency with properties {} ", currency);
+            log.debug("creating new Currency with properties {} ", currency);
             return getById(currencyId);
 
         } catch (DuplicateKeyException e) {
-            LOGGER.debug("Cannot create currency with these fields because they are not unique");
+            log.debug("Cannot create currency with these fields because they are not unique");
             return Optional.empty();
         }
     }
@@ -118,7 +115,7 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
      */
     @Override
     public Optional<Currency> update(Long id, Currency currency) {
-        LOGGER.debug("updating currency with id {} ", id);
+        log.debug("updating currency with id {} ", id);
         jdbcTemplate.update("UPDATE currencies" +
                         " SET name = ?," +
                         "short_name = ?," +
@@ -136,7 +133,7 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
      */
     @Override
     public void delete(Long id) {
-        LOGGER.debug("deleting currency with id {} ", id);
+        log.debug("deleting currency with id {} ", id);
         jdbcTemplate.update("DELETE from currencies  WHERE id = ?", id);
     }
 
@@ -147,7 +144,7 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
      */
     @Override
     public void deleteAllByBankId(Long bankId) {
-        LOGGER.debug("deleting all currencies by bank id{} ", bankId);
+        log.debug("deleting all currencies by bank id{} ", bankId);
         jdbcTemplate.update("DELETE FROM currencies where bank_id = ?", bankId);
     }
 

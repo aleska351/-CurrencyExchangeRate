@@ -5,10 +5,9 @@ import com.goncharenko.currencyexchangerate.dao.CurrencyRepository;
 import com.goncharenko.currencyexchangerate.domain.Currency;
 import com.goncharenko.currencyexchangerate.dto.CurrencyDTO;
 import com.goncharenko.currencyexchangerate.exceptions.ResourceNotFoundException;
-import com.goncharenko.currencyexchangerate.service.CurrencyService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
@@ -16,26 +15,23 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Component
-public class CurrencyServiceImpl implements com.goncharenko.currencyexchangerate.service.CurrencyService{
-    private static final Logger LOGGER = LoggerFactory.getLogger(BankServiceImpl.class);
+@Slf4j
+@RequiredArgsConstructor
+@Service
+public class CurrencyServiceImpl implements com.goncharenko.currencyexchangerate.service.CurrencyService {
     private final CurrencyRepository currencyRepository;
     private final BankRepository bankRepository;
 
-    public CurrencyServiceImpl(CurrencyRepository currencyRepository, BankRepository bankRepository) {
-        this.currencyRepository = currencyRepository;
-        this.bankRepository = bankRepository;
-    }
 
     @Transactional
     public CurrencyDTO getById(Long id) {
         Currency currency = currencyRepository.getById(id).orElseThrow(
                 () ->
                 {
-                    LOGGER.debug("There is no currency with id {} ", id);
+                    log.debug("There is no currency with id {} ", id);
                     throw new ResourceNotFoundException("There are no currencies with id " + id);
                 });
-        LOGGER.info("Currency with id {} was retrieved", id);
+        log.info("Currency with id {} was retrieved", id);
         return CurrencyDTO.convertToDTO(currency);
     }
 
@@ -43,10 +39,10 @@ public class CurrencyServiceImpl implements com.goncharenko.currencyexchangerate
     public List<CurrencyDTO> getAll() {
         List<Currency> currencies = currencyRepository.getAll();
         if (CollectionUtils.isEmpty(currencies)) {
-            LOGGER.debug("There are no currencies in table ");
+            log.debug("There are no currencies in table ");
             throw new ResourceNotFoundException("There are no currencies in table");
         }
-        LOGGER.info("Retrieved all currencies");
+        log.info("Retrieved all currencies");
         return currencies.stream().map(CurrencyDTO::convertToDTO).collect(Collectors.toList());
     }
 
@@ -54,10 +50,10 @@ public class CurrencyServiceImpl implements com.goncharenko.currencyexchangerate
     public List<CurrencyDTO> getAllCurrenciesByBankId(Long bankId) {
         List<Currency> currencies = currencyRepository.getAllCurrenciesByBankId(bankId);
         if (CollectionUtils.isEmpty(currencies)) {
-            LOGGER.debug("There are no currencies with  bank id {} in table ", bankId);
+            log.debug("There are no currencies with  bank id {} in table ", bankId);
             throw new ResourceNotFoundException("There are no currencies with this bank id ");
         }
-        LOGGER.info("Retrieved all currencies with bank id {} ", bankId);
+        log.info("Retrieved all currencies with bank id {} ", bankId);
         return currencies.stream().map(CurrencyDTO::convertToDTO).collect(Collectors.toList());
     }
 
@@ -66,10 +62,10 @@ public class CurrencyServiceImpl implements com.goncharenko.currencyexchangerate
     public CurrencyDTO create(Long bankId, CurrencyDTO currencyDTO) {
         if (bankRepository.getById(bankId).isPresent()) {
             Optional<Currency> createdCurrency = currencyRepository.create(bankId, CurrencyDTO.convertToDomain(currencyDTO));
-            LOGGER.info("{} was created", currencyDTO);
+            log.info("{} was created", currencyDTO);
             return CurrencyDTO.convertToDTO(createdCurrency.get());
         }
-        LOGGER.debug("{} can't be created ", currencyDTO);
+        log.debug("{} can't be created ", currencyDTO);
         throw new ResourceNotFoundException("Bank with id " + bankId + " is not found");
     }
 
@@ -77,9 +73,9 @@ public class CurrencyServiceImpl implements com.goncharenko.currencyexchangerate
     @Override
     public CurrencyDTO update(Long bankId, CurrencyDTO currencyDTO) {
         Optional<Currency> updatedCurrency = currencyRepository.update(bankId, CurrencyDTO.convertToDomain(currencyDTO));
-        LOGGER.info("{} was updated", currencyDTO);
+        log.info("{} was updated", currencyDTO);
         return CurrencyDTO.convertToDTO(updatedCurrency.orElseThrow(() -> {
-            LOGGER.debug("{} can't be updated ", currencyDTO);
+            log.debug("{} can't be updated ", currencyDTO);
             throw new ResourceNotFoundException("Bank with id " + bankId + " is not found");
         }));
     }
@@ -89,9 +85,9 @@ public class CurrencyServiceImpl implements com.goncharenko.currencyexchangerate
     public void delete(Long id) {
         currencyRepository.getById(id).ifPresentOrElse(currency -> {
             currencyRepository.delete(id);
-            LOGGER.info("Currency with id {} was deleted", id);
+            log.info("Currency with id {} was deleted", id);
         }, () -> {
-            LOGGER.debug("Currency with id {} cannot be delete", id);
+            log.debug("Currency with id {} cannot be delete", id);
             throw new ResourceNotFoundException("Currency with id " + id + " is not found");
         });
     }
