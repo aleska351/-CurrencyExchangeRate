@@ -1,6 +1,9 @@
 package com.goncharenko.currencyexchangerate.domain;
 
 import lombok.*;
+import org.codehaus.jackson.annotate.JsonBackReference;
+
+import javax.persistence.*;
 
 @Builder
 @Setter
@@ -8,17 +11,22 @@ import lombok.*;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-
+@Entity
+@Table(name = "currencies")
 public class Currency {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String shortName;
     private Double purchase;
     private Double sale;
-    private Long bankId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
+    @JoinColumn(name = "bank_id")
+    private Bank bank;
 
-    public Currency( String name, String shortName, Double purchase, Double sale) {
+    public Currency(String name, String shortName, Double purchase, Double sale) {
         this.id = id;
         this.name = name;
         this.shortName = shortName;
@@ -34,7 +42,6 @@ public class Currency {
                 ", shortName='" + shortName + '\'' +
                 ", purchase=" + purchase +
                 ", sale=" + sale +
-                ", bankId=" + bankId +
                 '}';
     }
 }

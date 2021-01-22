@@ -20,8 +20,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-
-    implementation 'org.projectlombok:lombok:1.16.18'
+    //Lombok
+    compileOnly 'org.projectlombok:lombok:1.18.8'
+    annotationProcessor 'org.projectlombok:lombok:1.18.8'
 
     //DevTool
     implementation 'org.springframework.boot:spring-boot-starter-actuator'

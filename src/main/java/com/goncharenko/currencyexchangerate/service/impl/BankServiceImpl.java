@@ -10,17 +10,14 @@ import com.goncharenko.currencyexchangerate.exceptions.ResourceNotFoundException
 import com.goncharenko.currencyexchangerate.service.BankService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.goncharenko.currencyexchangerate.dto.CurrencyDTO.convertToDTO;
 import static com.goncharenko.currencyexchangerate.dto.CurrencyDTO.convertToDomain;
 
 @Slf4j
@@ -30,82 +27,97 @@ public class BankServiceImpl implements BankService {
     private final BankRepository bankRepository;
     private final CurrencyRepository currencyRepository;
 
-    @Override
-    @Transactional
-    public BankDTO create(BankDTO bankDTO) {
-        Bank createdBank = bankRepository.create(BankDTO.convertToDomain(bankDTO)).orElseThrow(() -> {
-            log.debug("{} cannot be created", bankDTO);
-            throw new ResourceNotFoundException("Bank with id  is not found");
-        });
-        BankDTO convertDtoBank = BankDTO.convertToDTO(createdBank);
-        convertDtoBank.setCurrencyDTOList(new ArrayList<>());
-        if (!CollectionUtils.isEmpty(bankDTO.getCurrencyDTOList())) {
-            bankDTO.getCurrencyDTOList().forEach(currency -> {
-                Currency createdCurrency = currencyRepository.create(createdBank.getId(), convertToDomain(currency)).get();
-                CurrencyDTO convertedCurrencyDTO = convertToDTO(createdCurrency);
-                convertDtoBank.getCurrencyDTOList().add(convertedCurrencyDTO);
-            });
-        }
-        log.info("{} was created", bankDTO);
-        return convertDtoBank;
-    }
-
     @Transactional
     @Override
     public BankDTO getById(Long id) {
-        Bank bank = bankRepository.getById(id).orElseThrow(() -> {
-            log.debug("There is no bank with id {} ", id);
-            throw new ResourceNotFoundException("Bank with id " + id + " is not found");
-        });
-
-        List<Currency> currencies = currencyRepository.getAllCurrenciesByBankId(id);
-        if (CollectionUtils.isEmpty(currencies)) {
-            log.debug("There are no currencies with bank id {} ", id);
-        }
+        Bank bank = bankRepository.
+                findById(id).
+                orElseThrow(() -> {
+                    log.debug("There is no bank with id {} ", id);
+                    throw new ResourceNotFoundException("Bank with id " + id + " is not found");
+                });
         BankDTO bankDTO = BankDTO.convertToDTO(bank);
-        bankDTO.setCurrencyDTOList(currencies.stream().map(CurrencyDTO::convertToDTO).collect(Collectors.toList()));
-        log.info("Bank with id {} was retrieved", id);
+        bankDTO.setCurrencyDTOList(bank.getCurrencies().stream().map(CurrencyDTO::convertToDTO).collect(Collectors.toList()));
         return bankDTO;
     }
 
     @Transactional
     @Override
     public List<BankDTO> getAll() {
-        List<Bank> retrievedBanks = bankRepository.getAll();
+        List<Bank> retrievedBanks = bankRepository.findAll();
         if (CollectionUtils.isEmpty(retrievedBanks)) {
             log.debug("There are no banks in table ");
             throw new ResourceNotFoundException("There are no banks in table");
         }
-        List<BankDTO> bankDTOList = retrievedBanks.stream().map(BankDTO::convertToDTO).collect(Collectors.toList());
-        for (BankDTO retrievedBankDTO : bankDTOList) {
-            List<Currency> currencies = currencyRepository.getAllCurrenciesByBankId(retrievedBankDTO.getId());
-            if (CollectionUtils.isEmpty(currencies)) {
-                log.debug("There are no currencies in this bank {} ", retrievedBankDTO);
-            }
-            retrievedBankDTO.setCurrencyDTOList(currencies.stream().map(CurrencyDTO::convertToDTO).collect(Collectors.toList()));
+        List<BankDTO> bankDTOList = new ArrayList<>();
+        for (Bank bank : retrievedBanks) {
+            BankDTO bankDTO = BankDTO.convertToDTO(bank);
+            bankDTO.setCurrencyDTOList(bank.getCurrencies().stream().map(CurrencyDTO::convertToDTO).collect(Collectors.toList()));
+            bankDTOList.add(bankDTO);
         }
+
         log.info("Retrieved all banks");
         return bankDTOList;
+    }
+
+    @Override
+    @Transactional
+    public BankDTO create(BankDTO bankDTO) {
+        Bank bankToBeSaved = BankDTO.convertToDomain(bankDTO);
+        List<Currency> currencyList = bankDTO.getCurrencyDTOList()
+                .stream()
+                .map(currencyDTO -> {
+                    Currency currency = convertToDomain(currencyDTO);
+                    currency.setBank(bankToBeSaved);
+                    return currency;
+                })
+                .collect(Collectors.toList());
+        bankToBeSaved.setCurrencies(currencyList);
+        var createdBank = bankRepository.save(bankToBeSaved);
+
+        var convertDtoBank = BankDTO.convertToDTO(createdBank);
+        convertDtoBank.setCurrencyDTOList(createdBank.getCurrencies()
+                .stream()
+                .map(CurrencyDTO::convertToDTO)
+                .collect(Collectors.toList()));
+        log.info("{} was created", bankDTO);
+        return convertDtoBank;
 
     }
 
     @Transactional
     @Override
-    public BankDTO update(Long bankDtoId, BankDTO retrievedBankDTO) {
-        Optional<Bank> updatedBank = bankRepository.update(bankDtoId, BankDTO.convertToDomain(retrievedBankDTO));
-        log.info("{} with id {}  was updated", retrievedBankDTO, bankDtoId);
-        return BankDTO.convertToDTO(updatedBank.orElseThrow(() -> {
-            log.debug("{} can't be updated ", retrievedBankDTO);
-            throw new ResourceNotFoundException("Bank with id " + bankDtoId + " is not found");
-        }));
+    public BankDTO update(Long id, BankDTO retrievedBankDTO) {
+        Bank bankToBeUpdated = bankRepository.findById(id).get();
+
+        bankToBeUpdated.setName(retrievedBankDTO.getName());
+        bankToBeUpdated.setPhoneNumber(retrievedBankDTO.getPhoneNumber());
+        bankToBeUpdated.setBankType(retrievedBankDTO.getBankType());
+        bankToBeUpdated.setIsOnlineAvailable(retrievedBankDTO.getIsOnlineAvailable());
+        bankToBeUpdated.setNumberOfDepartments(retrievedBankDTO.getNumberOfDepartments());
+        bankToBeUpdated.setAddress(retrievedBankDTO.getAddress());
+        bankToBeUpdated.setCurrencies(retrievedBankDTO.getCurrencyDTOList().stream()
+                .map(currencyDTO -> {
+                    Currency currency = convertToDomain(currencyDTO);
+                    currency.setBank(bankToBeUpdated);
+                    return currency;
+                })
+                .collect(Collectors.toList()));
+
+        var updatedBank = bankRepository.save(bankToBeUpdated);
+        BankDTO convertDtoBank = BankDTO.convertToDTO(updatedBank);
+        convertDtoBank.setCurrencyDTOList(updatedBank.getCurrencies()
+                .stream()
+                .map(CurrencyDTO::convertToDTO)
+                .collect(Collectors.toList()));
+        return convertDtoBank;
     }
 
     @Transactional
     @Override
     public void delete(Long id) {
-        bankRepository.getById(id).ifPresentOrElse(bank -> {
-            currencyRepository.deleteAllByBankId(id);
-            bankRepository.delete(id);
+        bankRepository.findById(id).ifPresentOrElse(bank -> {
+            bankRepository.delete(bank);
             log.info("Bank with id {} was deleted", id);
         }, () -> {
             log.debug("Bank was not deleted");

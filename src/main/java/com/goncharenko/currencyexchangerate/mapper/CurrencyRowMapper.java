@@ -18,7 +18,7 @@ public class CurrencyRowMapper implements RowMapper<Currency> {
         currency.setShortName(rs.getString("short_name"));
         currency.setPurchase(rs.getDouble("purchase"));
         currency.setSale(rs.getDouble("sale"));
-        currency.setBankId(rs.getLong("bank_id"));
+        //currency.setBank(rs.getInt("bank_id"));
         return currency;
     }
 }

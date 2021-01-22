@@ -3,12 +3,10 @@ package com.goncharenko.currencyexchangerate.mapper;
 import com.goncharenko.currencyexchangerate.domain.Bank;
 import com.goncharenko.currencyexchangerate.domain.Type;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-@Component
 public class BankRowMapper implements RowMapper<Bank> {
 
     @Override
@@ -21,6 +19,7 @@ public class BankRowMapper implements RowMapper<Bank> {
         bank.setIsOnlineAvailable(rs.getBoolean("is_online_available"));
         bank.setNumberOfDepartments(rs.getInt("number_of_departments"));
         bank.setAddress(rs.getString("address"));
+
         return bank;
     }
 }

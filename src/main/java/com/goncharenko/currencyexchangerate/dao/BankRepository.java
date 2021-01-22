@@ -1,20 +1,8 @@
 package com.goncharenko.currencyexchangerate.dao;
 
 import com.goncharenko.currencyexchangerate.domain.Bank;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
-import java.util.Optional;
-
-public interface BankRepository extends Paginated<Bank> {
-    Optional<Bank> getById(Long id);
-
-    List<Bank> getAll();
-
-    Optional<Bank> create(Bank bank);
-
-    Optional<Bank> update(Long id, Bank bank);
-
-    void delete(Long id);
+public interface BankRepository extends JpaRepository<Bank, Long> {
 
 }

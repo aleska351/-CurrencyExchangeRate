@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/currencies")
+@RequestMapping(path = "/banks/{bankId}/currencies")
 public class CurrencyController {
     private final CurrencyService currencyService;
 
@@ -17,14 +17,14 @@ public class CurrencyController {
         this.currencyService = currencyService;
     }
 
-    @PostMapping(value = "/{id}")
-    public ResponseEntity<CurrencyDTO> create(@PathVariable Long id, @RequestBody CurrencyDTO currencyDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(currencyService.create(id, currencyDTO));
+    @PostMapping
+    public ResponseEntity<CurrencyDTO> create(@PathVariable Long bankId, @RequestBody CurrencyDTO currencyDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(currencyService.create(bankId, currencyDTO));
     }
 
     @GetMapping
-    public ResponseEntity<List<CurrencyDTO>> getCurrencies() {
-        return ResponseEntity.status(HttpStatus.OK).body(currencyService.getAll());
+    public ResponseEntity<List<CurrencyDTO>> getCurrenciesByBankId(@PathVariable Long bankId) {
+        return ResponseEntity.status(HttpStatus.OK).body(currencyService.getAllCurrenciesByBankId(bankId));
     }
 
     @GetMapping(path = "/{id}")
