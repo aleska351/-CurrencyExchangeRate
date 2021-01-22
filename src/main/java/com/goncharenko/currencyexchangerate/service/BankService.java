@@ -7,9 +7,9 @@ import java.util.List;
 
 
 public interface BankService {
-    BankDTO retrieveById(Long id);
+    BankDTO getById(Long id);
 
-    List<BankDTO> retrieveAll();
+    List<BankDTO> getAll();
 
     BankDTO create(BankDTO bankDTO);
 

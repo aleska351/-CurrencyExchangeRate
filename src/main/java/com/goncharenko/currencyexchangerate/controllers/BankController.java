@@ -29,12 +29,12 @@ public class BankController {
 
     @GetMapping
     public ResponseEntity<List<BankDTO>> getBanks() {
-        return ResponseEntity.status(HttpStatus.OK).body(bankService.retrieveAll());
+        return ResponseEntity.status(HttpStatus.OK).body(bankService.getAll());
     }
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<BankDTO> getBank(@PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(bankService.retrieveById(id));
+        return ResponseEntity.status(HttpStatus.OK).body(bankService.getById(id));
     }
 
     @PutMapping(value = "/{id}")
@@ -52,7 +52,7 @@ public class BankController {
 
     @GetMapping(path = "/{id}/currencies/")
     public ResponseEntity<List<CurrencyDTO>> getCurrencyByBankId(@PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(currencyService.retrieveAllCurrenciesByBankId(id));
+        return ResponseEntity.status(HttpStatus.OK).body(currencyService.getAllCurrenciesByBankId(id));
     }
 
 }

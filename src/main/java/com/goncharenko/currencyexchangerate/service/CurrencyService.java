@@ -7,11 +7,11 @@ import java.util.List;
 
 
 public interface CurrencyService {
-    CurrencyDTO retrieveById(Long id);
+    CurrencyDTO getById(Long id);
 
-    List<CurrencyDTO> retrieveAll();
+    List<CurrencyDTO> getAll();
 
-    List<CurrencyDTO> retrieveAllCurrenciesByBankId(Long bankId);
+    List<CurrencyDTO> getAllCurrenciesByBankId(Long bankId);
 
     CurrencyDTO create(Long bankId, CurrencyDTO currencyDTO);
 

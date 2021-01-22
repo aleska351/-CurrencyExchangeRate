@@ -36,7 +36,7 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
      * @return current currency or Optional.empty() if currency with given id not found
      */
     @Override
-    public Optional<Currency> retrieveById(Long id) {
+    public Optional<Currency> getById(Long id) {
         LOGGER.debug("retrieve currency with id {} ", id);
         try {
             return Optional.of(jdbcTemplate.queryForObject
@@ -53,7 +53,7 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
      * @return List of currencies from table.
      */
     @Override
-    public List<Currency> retrieveAll() {
+    public List<Currency> getAll() {
         LOGGER.debug("retrieve all currencies");
         return jdbcTemplate.query
                 ("SELECT * FROM currencies", CURRENCY_ROW_MAPPER);
@@ -66,7 +66,7 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
      * @return current List of currencies by given bank id.
      */
     @Override
-    public List<Currency> retrieveAllCurrenciesByBankId(Long bankId) {
+    public List<Currency> getAllCurrenciesByBankId(Long bankId) {
         LOGGER.debug("retrieve all currencies by bank_id");
         return jdbcTemplate.query
                 ("SELECT * FROM currencies where bank_id=?", CURRENCY_ROW_MAPPER, bankId);
@@ -100,7 +100,7 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
             }, keyHolder);
             long currencyId = keyHolder.getKey().longValue();
             LOGGER.debug("creating new Currency with properties {} ", currency);
-            return retrieveById(currencyId);
+            return getById(currencyId);
 
         } catch (DuplicateKeyException e) {
             LOGGER.debug("Cannot create currency with these fields because they are not unique");
@@ -125,7 +125,7 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
                         "sale = ? " +
                         "WHERE id = ?",
                 currency.getName(), currency.getShortName(), currency.getPurchase(), currency.getSale(), id);
-        return retrieveById(id);
+        return getById(id);
     }
 
     /**

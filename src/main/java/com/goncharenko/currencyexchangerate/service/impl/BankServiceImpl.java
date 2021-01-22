@@ -55,13 +55,13 @@ public class BankServiceImpl implements BankService {
 
     @Transactional
     @Override
-    public BankDTO retrieveById(Long id) {
-        Bank bank = bankRepository.retrieveById(id).orElseThrow(() -> {
+    public BankDTO getById(Long id) {
+        Bank bank = bankRepository.getById(id).orElseThrow(() -> {
             LOGGER.debug("There is no bank with id {} ", id);
             throw new ResourceNotFoundException("Bank with id " + id + " is not found");
         });
 
-        List<Currency> currencies = currencyRepository.retrieveAllCurrenciesByBankId(id);
+        List<Currency> currencies = currencyRepository.getAllCurrenciesByBankId(id);
         if (CollectionUtils.isEmpty(currencies)) {
             LOGGER.debug("There are no currencies with bank id {} ", id);
         }
@@ -73,15 +73,15 @@ public class BankServiceImpl implements BankService {
 
     @Transactional
     @Override
-    public List<BankDTO> retrieveAll() {
-        List<Bank> retrievedBanks = bankRepository.retrieveAll();
+    public List<BankDTO> getAll() {
+        List<Bank> retrievedBanks = bankRepository.getAll();
         if (CollectionUtils.isEmpty(retrievedBanks)) {
             LOGGER.debug("There are no banks in table ");
             throw new ResourceNotFoundException("There are no banks in table");
         }
         List<BankDTO> bankDTOList = retrievedBanks.stream().map(BankDTO::convertToDTO).collect(Collectors.toList());
         for (BankDTO retrievedBankDTO : bankDTOList) {
-            List<Currency> currencies = currencyRepository.retrieveAllCurrenciesByBankId(retrievedBankDTO.getId());
+            List<Currency> currencies = currencyRepository.getAllCurrenciesByBankId(retrievedBankDTO.getId());
             if (CollectionUtils.isEmpty(currencies)) {
                 LOGGER.debug("There are no currencies in this bank {} ", retrievedBankDTO);
             }
@@ -106,7 +106,7 @@ public class BankServiceImpl implements BankService {
     @Transactional
     @Override
     public void delete(Long id) {
-        bankRepository.retrieveById(id).ifPresentOrElse(bank -> {
+        bankRepository.getById(id).ifPresentOrElse(bank -> {
             currencyRepository.deleteAllByBankId(id);
             bankRepository.delete(id);
             LOGGER.info("Bank with id {} was deleted", id);

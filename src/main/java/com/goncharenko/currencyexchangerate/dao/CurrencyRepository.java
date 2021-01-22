@@ -7,11 +7,11 @@ import java.util.Optional;
 
 public interface CurrencyRepository extends Paginated<Currency> {
 
-    Optional<Currency> retrieveById(Long id);
+    Optional<Currency> getById(Long id);
 
-    List<Currency> retrieveAll();
+    List<Currency> getAll();
 
-    List<Currency> retrieveAllCurrenciesByBankId(Long bankId);
+    List<Currency> getAllCurrenciesByBankId(Long bankId);
 
     Optional<Currency> create(Long bankId, Currency currency);
 
