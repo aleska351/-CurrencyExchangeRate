@@ -1,6 +1,7 @@
 package com.goncharenko.currencyexchangerate.domain;
 
 import lombok.*;
+import lombok.experimental.FieldNameConstants;
 
 import javax.persistence.*;
 import java.util.List;
@@ -11,9 +12,10 @@ import java.util.List;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Entity
 @Table(name = "banks")
-public class Bank {
+public class Bank extends AbstractAuditDomain{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,6 +33,7 @@ public class Bank {
     @Column(name = "address")
     private String address;
     @OneToMany(mappedBy = "bank", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private List<Currency> currencies;
 
     public Bank(String name, String phoneNumber, Type bankType, Boolean isOnlineAvailable, Integer numberOfDepartments, String address) {
@@ -42,16 +45,4 @@ public class Bank {
         this.address = address;
     }
 
-    @Override
-    public String toString() {
-        return "Bank{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", bankType=" + bankType +
-                ", isOnlineAvailable=" + isOnlineAvailable +
-                ", numberOfDepartments=" + numberOfDepartments +
-                ", address='" + address + '\'' +
-                '}';
-    }
 }

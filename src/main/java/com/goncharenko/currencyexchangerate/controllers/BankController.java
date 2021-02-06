@@ -28,8 +28,9 @@ public class BankController {
     }
 
     @GetMapping
-    public ResponseEntity<List<BankDTO>> getBanks() {
-        return ResponseEntity.status(HttpStatus.OK).body(bankService.getAll());
+    public ResponseEntity<List<BankDTO>> getBanks(@RequestParam(required = false) String search,
+                                                  @RequestParam(required = false) String sortField) {
+        return ResponseEntity.status(HttpStatus.OK).body(bankService.getAll(search, sortField));
     }
 
     @GetMapping(path = "/{id}")
@@ -48,11 +49,6 @@ public class BankController {
         bankService.delete(id);
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT).build();
-    }
-
-    @GetMapping(path = "/{id}/currencies/")
-    public ResponseEntity<List<CurrencyDTO>> getCurrencyByBankId(@PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(currencyService.getAllCurrenciesByBankId(id));
     }
 
 }

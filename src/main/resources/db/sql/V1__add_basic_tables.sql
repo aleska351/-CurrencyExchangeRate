@@ -7,8 +7,7 @@ CREATE TABLE if not EXISTS banks
     bank_type             VARCHAR(100) NOT NULL,
     is_online_available   BOOLEAN      NOT NULL,
     number_of_departments INTEGER      NOT NULL,
-    address               VARCHAR(255) NOT NULL,
-    unique (name, phone_number, address)
+    address               VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE if not EXISTS currencies
@@ -20,6 +19,5 @@ CREATE TABLE if not EXISTS currencies
     purchase   FLOAT        NOT NULL,
     sale       FLOAT        NOT NULL,
     bank_id    INTEGER      NOT NULL,
-    FOREIGN KEY (bank_id) REFERENCES banks (id),
-    unique (name, short_name, bank_id)
+    FOREIGN KEY (bank_id) REFERENCES banks (id)
 );

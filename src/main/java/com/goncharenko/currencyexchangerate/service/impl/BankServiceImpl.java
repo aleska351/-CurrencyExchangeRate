@@ -10,11 +10,16 @@ import com.goncharenko.currencyexchangerate.exceptions.ResourceNotFoundException
 import com.goncharenko.currencyexchangerate.service.BankService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.mapping.Collection;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,21 +48,35 @@ public class BankServiceImpl implements BankService {
 
     @Transactional
     @Override
-    public List<BankDTO> getAll() {
-        List<Bank> retrievedBanks = bankRepository.findAll();
+    public List<BankDTO> getAll(String search, String sortField) {
+        List<Bank> retrievedBanks;
+        if (StringUtils.isEmpty(search)) {
+            retrievedBanks = bankRepository.findAll();
+            log.info("Retrieved all banks");
+        } else {
+            //bankRepository.findAllByNameContains(search);
+            ExampleMatcher exampleMatcher = ExampleMatcher
+                    .matchingAny()
+                    .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
+                    .withMatcher("address", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase());
+            retrievedBanks = bankRepository.findAll(
+                    Example.of(new Bank(search, null, null, null, null, search), exampleMatcher),
+                    Sort.by(Sort.Direction.DESC, sortField));
+        }
         if (CollectionUtils.isEmpty(retrievedBanks)) {
             log.debug("There are no banks in table ");
-            throw new ResourceNotFoundException("There are no banks in table");
-        }
-        List<BankDTO> bankDTOList = new ArrayList<>();
-        for (Bank bank : retrievedBanks) {
-            BankDTO bankDTO = BankDTO.convertToDTO(bank);
-            bankDTO.setCurrencyDTOList(bank.getCurrencies().stream().map(CurrencyDTO::convertToDTO).collect(Collectors.toList()));
-            bankDTOList.add(bankDTO);
+            Collections.emptyList();
         }
 
-        log.info("Retrieved all banks");
-        return bankDTOList;
+        return retrievedBanks
+                .stream()
+                .map(bank -> {
+                    BankDTO bankDTO = BankDTO.convertToDTO(bank);
+                    bankDTO.setCurrencyDTOList(bank.getCurrencies().stream().map(CurrencyDTO::convertToDTO).collect(Collectors.toList()));
+                    return bankDTO;
+                })
+                .collect(Collectors.toList());
+
     }
 
     @Override
@@ -88,23 +107,24 @@ public class BankServiceImpl implements BankService {
     @Transactional
     @Override
     public BankDTO update(Long id, BankDTO retrievedBankDTO) {
-        Bank bankToBeUpdated = bankRepository.findById(id).get();
+        Bank bankToBeSaved = bankRepository.findById(id).map(bank -> {
 
-        bankToBeUpdated.setName(retrievedBankDTO.getName());
-        bankToBeUpdated.setPhoneNumber(retrievedBankDTO.getPhoneNumber());
-        bankToBeUpdated.setBankType(retrievedBankDTO.getBankType());
-        bankToBeUpdated.setIsOnlineAvailable(retrievedBankDTO.getIsOnlineAvailable());
-        bankToBeUpdated.setNumberOfDepartments(retrievedBankDTO.getNumberOfDepartments());
-        bankToBeUpdated.setAddress(retrievedBankDTO.getAddress());
-        bankToBeUpdated.setCurrencies(retrievedBankDTO.getCurrencyDTOList().stream()
-                .map(currencyDTO -> {
-                    Currency currency = convertToDomain(currencyDTO);
-                    currency.setBank(bankToBeUpdated);
-                    return currency;
-                })
-                .collect(Collectors.toList()));
+            bank.setName(retrievedBankDTO.getName());
+            bank.setPhoneNumber(retrievedBankDTO.getPhoneNumber());
+            bank.setBankType(retrievedBankDTO.getBankType());
+            bank.setIsOnlineAvailable(retrievedBankDTO.getIsOnlineAvailable());
+            bank.setNumberOfDepartments(retrievedBankDTO.getNumberOfDepartments());
+            bank.setAddress(retrievedBankDTO.getAddress());
+            bank.setCurrencies(retrievedBankDTO.getCurrencyDTOList().stream()
+                    .map(currencyDTO -> {
+                        Currency currency = convertToDomain(currencyDTO);
+                        currency.setBank(bank);
+                        return currency;
+                    }).collect(Collectors.toList()));
+            return bank;
+        }).orElseThrow(() -> new ResourceNotFoundException("Bank with id " + id + " is not found"));
 
-        var updatedBank = bankRepository.save(bankToBeUpdated);
+        var updatedBank = bankRepository.save(bankToBeSaved);
         BankDTO convertDtoBank = BankDTO.convertToDTO(updatedBank);
         convertDtoBank.setCurrencyDTOList(updatedBank.getCurrencies()
                 .stream()

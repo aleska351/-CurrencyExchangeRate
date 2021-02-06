@@ -22,9 +22,17 @@ public class CurrencyController {
         return ResponseEntity.status(HttpStatus.CREATED).body(currencyService.create(bankId, currencyDTO));
     }
 
+//    @GetMapping
+//    public ResponseEntity<List<CurrencyDTO>> getAllCurrencies(@RequestParam(required = false) String search,
+//                                                              @RequestParam(required = false) String sortField) {
+//        return ResponseEntity.status(HttpStatus.OK).body(currencyService.getAll(search, sortField));
+//    }
+
     @GetMapping
-    public ResponseEntity<List<CurrencyDTO>> getCurrenciesByBankId(@PathVariable Long bankId) {
-        return ResponseEntity.status(HttpStatus.OK).body(currencyService.getAllCurrenciesByBankId(bankId));
+    public ResponseEntity<List<CurrencyDTO>> getCurrenciesByBankId(@PathVariable Long bankId,
+                                                                   @RequestParam(required = false) String search,
+                                                                   @RequestParam(required = false) String sortField) {
+        return ResponseEntity.status(HttpStatus.OK).body(currencyService.getAllCurrenciesByBankId(bankId, search, sortField));
     }
 
     @GetMapping(path = "/{id}")

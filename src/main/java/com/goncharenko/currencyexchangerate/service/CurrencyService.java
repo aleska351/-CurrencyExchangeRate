@@ -10,7 +10,7 @@ public interface CurrencyService {
 
     List<CurrencyDTO> getAll();
 
-    List<CurrencyDTO> getAllCurrenciesByBankId(Long bankId);
+    List<CurrencyDTO> getAllCurrenciesByBankId(Long bankId, String search, String sortField);
 
     CurrencyDTO create(Long bankId, CurrencyDTO currencyDTO);
 
