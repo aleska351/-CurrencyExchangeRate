@@ -1,7 +1,6 @@
 package com.goncharenko.currencyexchangerate.domain;
 
 import lombok.*;
-import lombok.experimental.FieldNameConstants;
 
 import javax.persistence.*;
 import java.util.List;
@@ -15,7 +14,7 @@ import java.util.List;
 @ToString
 @Entity
 @Table(name = "banks")
-public class Bank extends AbstractAuditDomain{
+public class Bank extends AbstractAuditDomain {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

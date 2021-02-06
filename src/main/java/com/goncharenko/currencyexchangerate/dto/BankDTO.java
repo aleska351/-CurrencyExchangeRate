@@ -14,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Component
+@ToString
 public class BankDTO {
     private Long id;
     private String name;
@@ -22,6 +23,7 @@ public class BankDTO {
     private Boolean isOnlineAvailable;
     private Integer numberOfDepartments;
     private String address;
+    @ToString.Exclude
     private List<CurrencyDTO> currencyDTOList;
 
     public BankDTO(Long id, String name, String phoneNumber, Type bankType, Boolean isOnlineAvailable, Integer numberOfDepartments, String address) {
@@ -34,19 +36,6 @@ public class BankDTO {
         this.address = address;
     }
 
-    @Override
-    public String toString() {
-        return "BankDTO{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", bankType=" + bankType +
-                ", isOnlineAvailable=" + isOnlineAvailable +
-                ", numberOfDepartments=" + numberOfDepartments +
-                ", address='" + address + '\'' +
-                ", currencyDTOList=" + currencyDTOList +
-                '}';
-    }
 
     public static Bank convertToDomain(BankDTO bankDTO) {
         return new Bank(bankDTO.getName(), bankDTO.getPhoneNumber(), bankDTO.getBankType(), bankDTO.getIsOnlineAvailable(), bankDTO.getNumberOfDepartments(), bankDTO.getAddress());

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Component
 public class CurrencyDTO {
     private Long id;
