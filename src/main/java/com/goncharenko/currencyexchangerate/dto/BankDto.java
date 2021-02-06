@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @Component
 @ToString
-public class BankDTO {
+public class BankDto {
     private Long id;
     private String name;
     private String phoneNumber;
@@ -24,9 +24,9 @@ public class BankDTO {
     private Integer numberOfDepartments;
     private String address;
     @ToString.Exclude
-    private List<CurrencyDTO> currencyDTOList;
+    private List<CurrencyDto> currencyDtoList;
 
-    public BankDTO(Long id, String name, String phoneNumber, Type bankType, Boolean isOnlineAvailable, Integer numberOfDepartments, String address) {
+    public BankDto(Long id, String name, String phoneNumber, Type bankType, Boolean isOnlineAvailable, Integer numberOfDepartments, String address) {
         this.id = id;
         this.name = name;
         this.phoneNumber = phoneNumber;
@@ -37,11 +37,11 @@ public class BankDTO {
     }
 
 
-    public static Bank convertToDomain(BankDTO bankDTO) {
+    public static Bank convertToDomain(BankDto bankDTO) {
         return new Bank(bankDTO.getName(), bankDTO.getPhoneNumber(), bankDTO.getBankType(), bankDTO.getIsOnlineAvailable(), bankDTO.getNumberOfDepartments(), bankDTO.getAddress());
     }
 
-    public static BankDTO convertToDTO(Bank createdBank) {
-        return new BankDTO(createdBank.getId(), createdBank.getName(), createdBank.getPhoneNumber(), createdBank.getBankType(), createdBank.getIsOnlineAvailable(), createdBank.getNumberOfDepartments(), createdBank.getAddress());
+    public static BankDto convertToDTO(Bank createdBank) {
+        return new BankDto(createdBank.getId(), createdBank.getName(), createdBank.getPhoneNumber(), createdBank.getBankType(), createdBank.getIsOnlineAvailable(), createdBank.getNumberOfDepartments(), createdBank.getAddress());
     }
 }

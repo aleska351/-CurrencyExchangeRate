@@ -1,20 +1,20 @@
 package com.goncharenko.currencyexchangerate.service;
 
-import com.goncharenko.currencyexchangerate.dto.CurrencyDTO;
+import com.goncharenko.currencyexchangerate.dto.CurrencyDto;
 
 import java.util.List;
 
 
 public interface CurrencyService {
-    CurrencyDTO getById(Long id);
+    CurrencyDto getById(Long id);
 
-    List<CurrencyDTO> getAll();
+    List<CurrencyDto> getAll();
 
-    List<CurrencyDTO> getAllCurrenciesByBankId(Long bankId, String search, String sortField);
+    List<CurrencyDto> getAllCurrenciesByBankId(Long bankId, String search, String sortField);
 
-    CurrencyDTO create(Long bankId, CurrencyDTO currencyDTO);
+    CurrencyDto create(Long bankId, CurrencyDto currencyDTO);
 
-    CurrencyDTO update(Long id, CurrencyDTO currencyDTO);
+    CurrencyDto update(Long id, CurrencyDto currencyDTO);
 
     void delete(Long id);
 
