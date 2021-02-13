@@ -4,15 +4,12 @@ import com.goncharenko.currencyexchangerate.dao.BankRepository;
 import com.goncharenko.currencyexchangerate.dao.CurrencyRepository;
 import com.goncharenko.currencyexchangerate.domain.Bank;
 import com.goncharenko.currencyexchangerate.domain.Currency;
-import com.goncharenko.currencyexchangerate.dto.CurrencyDTO;
+import com.goncharenko.currencyexchangerate.dto.CurrencyDto;
 import com.goncharenko.currencyexchangerate.exceptions.ResourceNotFoundException;
 
 import com.goncharenko.currencyexchangerate.service.CurrencyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -29,7 +26,7 @@ public class CurrencyServiceImpl implements CurrencyService {
 
 
     @Transactional
-    public CurrencyDTO getById(Long id) {
+    public CurrencyDto getById(Long id) {
         Currency currency = currencyRepository.findById(id).orElseThrow(
                 () ->
                 {
@@ -37,19 +34,19 @@ public class CurrencyServiceImpl implements CurrencyService {
                     throw new ResourceNotFoundException("There are no currencies with id " + id);
                 });
         log.info("Currency with id {} was retrieved", id);
-        return CurrencyDTO.convertToDTO(currency);
+        return CurrencyDto.convertToDTO(currency);
     }
 
     @Transactional
-    public List<CurrencyDTO> getAll() {
+    public List<CurrencyDto> getAll() {
         List<Currency> currencies;
         currencies = currencyRepository.findAll();
         log.info("Retrieved all currencies");
-        return currencies.stream().map(CurrencyDTO::convertToDTO).collect(Collectors.toList());
+        return currencies.stream().map(CurrencyDto::convertToDTO).collect(Collectors.toList());
     }
 
     @Transactional
-    public List<CurrencyDTO> getAllCurrenciesByBankId(Long bankId, String search, String sortField) {
+    public List<CurrencyDto> getAllCurrenciesByBankId(Long bankId, String search, String sortField) {
         Bank bank = bankRepository.findById(bankId).orElseThrow();
         List<Currency> currencies;
 
@@ -59,18 +56,18 @@ public class CurrencyServiceImpl implements CurrencyService {
         currencies = currencyRepository.findAllByPurchaseOrSale(search, search);
         }
         log.info("Retrieved all currencies with bank id {} ", bankId);
-        return currencies.stream().map(CurrencyDTO::convertToDTO).collect(Collectors.toList());
+        return currencies.stream().map(CurrencyDto::convertToDTO).collect(Collectors.toList());
     }
 
     @Transactional
     @Override
-    public CurrencyDTO create(Long bankId, CurrencyDTO currencyDTO) {
+    public CurrencyDto create(Long bankId, CurrencyDto currencyDTO) {
         if (bankRepository.findById(bankId).isPresent()) {
-            Currency createdCurrency = CurrencyDTO.convertToDomain(currencyDTO);
+            Currency createdCurrency = CurrencyDto.convertToDomain(currencyDTO);
             createdCurrency.setBank(bankRepository.findById(bankId).get());
             Currency createdCurrencyc = currencyRepository.save(createdCurrency);
             log.info("{} was created", currencyDTO);
-            return CurrencyDTO.convertToDTO(createdCurrencyc);
+            return CurrencyDto.convertToDTO(createdCurrencyc);
         }
         log.debug("{} can't be created ", currencyDTO);
         throw new ResourceNotFoundException("Bank with id " + bankId + " is not found");
@@ -78,7 +75,7 @@ public class CurrencyServiceImpl implements CurrencyService {
 
     @Transactional
     @Override
-    public CurrencyDTO update(Long id, CurrencyDTO currencyDTO) {
+    public CurrencyDto update(Long id, CurrencyDto currencyDTO) {
         Currency currencyToBeUpdated = currencyRepository.findById(id).get();
         currencyToBeUpdated.setName(currencyDTO.getName());
         currencyToBeUpdated.setShortName(currencyDTO.getShortName());
@@ -86,8 +83,8 @@ public class CurrencyServiceImpl implements CurrencyService {
         currencyToBeUpdated.setSale(currencyDTO.getSale());
 
         Currency updatedCurrency = currencyRepository.save(currencyToBeUpdated);
-        CurrencyDTO updatedCurrencyDTO = CurrencyDTO.convertToDTO(updatedCurrency);
-        return updatedCurrencyDTO;
+        CurrencyDto updatedCurrencyDto = CurrencyDto.convertToDTO(updatedCurrency);
+        return updatedCurrencyDto;
     }
 
     @Transactional

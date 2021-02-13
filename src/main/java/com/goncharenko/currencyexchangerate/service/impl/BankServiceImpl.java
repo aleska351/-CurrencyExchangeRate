@@ -4,13 +4,12 @@ import com.goncharenko.currencyexchangerate.dao.BankRepository;
 import com.goncharenko.currencyexchangerate.dao.CurrencyRepository;
 import com.goncharenko.currencyexchangerate.domain.Bank;
 import com.goncharenko.currencyexchangerate.domain.Currency;
-import com.goncharenko.currencyexchangerate.dto.BankDTO;
-import com.goncharenko.currencyexchangerate.dto.CurrencyDTO;
+import com.goncharenko.currencyexchangerate.dto.BankDto;
+import com.goncharenko.currencyexchangerate.dto.CurrencyDto;
 import com.goncharenko.currencyexchangerate.exceptions.ResourceNotFoundException;
 import com.goncharenko.currencyexchangerate.service.BankService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.mapping.Collection;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Sort;
@@ -23,7 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.goncharenko.currencyexchangerate.dto.CurrencyDTO.convertToDomain;
+import static com.goncharenko.currencyexchangerate.dto.CurrencyDto.convertToDomain;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -34,21 +33,21 @@ public class BankServiceImpl implements BankService {
 
     @Transactional
     @Override
-    public BankDTO getById(Long id) {
+    public BankDto getById(Long id) {
         Bank bank = bankRepository.
                 findById(id).
                 orElseThrow(() -> {
                     log.debug("There is no bank with id {} ", id);
                     throw new ResourceNotFoundException("Bank with id " + id + " is not found");
                 });
-        BankDTO bankDTO = BankDTO.convertToDTO(bank);
-        bankDTO.setCurrencyDTOList(bank.getCurrencies().stream().map(CurrencyDTO::convertToDTO).collect(Collectors.toList()));
+        BankDto bankDTO = BankDto.convertToDTO(bank);
+        bankDTO.setCurrencyDtoList(bank.getCurrencies().stream().map(CurrencyDto::convertToDTO).collect(Collectors.toList()));
         return bankDTO;
     }
 
     @Transactional
     @Override
-    public List<BankDTO> getAll(String search, String sortField) {
+    public List<BankDto> getAll(String search, String sortField) {
         List<Bank> retrievedBanks;
         if (StringUtils.isEmpty(search)) {
             retrievedBanks = bankRepository.findAll();
@@ -71,8 +70,8 @@ public class BankServiceImpl implements BankService {
         return retrievedBanks
                 .stream()
                 .map(bank -> {
-                    BankDTO bankDTO = BankDTO.convertToDTO(bank);
-                    bankDTO.setCurrencyDTOList(bank.getCurrencies().stream().map(CurrencyDTO::convertToDTO).collect(Collectors.toList()));
+                    BankDto bankDTO = BankDto.convertToDTO(bank);
+                    bankDTO.setCurrencyDtoList(bank.getCurrencies().stream().map(CurrencyDto::convertToDTO).collect(Collectors.toList()));
                     return bankDTO;
                 })
                 .collect(Collectors.toList());
@@ -81,9 +80,9 @@ public class BankServiceImpl implements BankService {
 
     @Override
     @Transactional
-    public BankDTO create(BankDTO bankDTO) {
-        Bank bankToBeSaved = BankDTO.convertToDomain(bankDTO);
-        List<Currency> currencyList = bankDTO.getCurrencyDTOList()
+    public BankDto create(BankDto bankDTO) {
+        Bank bankToBeSaved = BankDto.convertToDomain(bankDTO);
+        List<Currency> currencyList = bankDTO.getCurrencyDtoList()
                 .stream()
                 .map(currencyDTO -> {
                     Currency currency = convertToDomain(currencyDTO);
@@ -94,10 +93,10 @@ public class BankServiceImpl implements BankService {
         bankToBeSaved.setCurrencies(currencyList);
         var createdBank = bankRepository.save(bankToBeSaved);
 
-        var convertDtoBank = BankDTO.convertToDTO(createdBank);
-        convertDtoBank.setCurrencyDTOList(createdBank.getCurrencies()
+        var convertDtoBank = BankDto.convertToDTO(createdBank);
+        convertDtoBank.setCurrencyDtoList(createdBank.getCurrencies()
                 .stream()
-                .map(CurrencyDTO::convertToDTO)
+                .map(CurrencyDto::convertToDTO)
                 .collect(Collectors.toList()));
         log.info("{} was created", bankDTO);
         return convertDtoBank;
@@ -106,16 +105,16 @@ public class BankServiceImpl implements BankService {
 
     @Transactional
     @Override
-    public BankDTO update(Long id, BankDTO retrievedBankDTO) {
+    public BankDto update(Long id, BankDto retrievedBankDto) {
         Bank bankToBeSaved = bankRepository.findById(id).map(bank -> {
 
-            bank.setName(retrievedBankDTO.getName());
-            bank.setPhoneNumber(retrievedBankDTO.getPhoneNumber());
-            bank.setBankType(retrievedBankDTO.getBankType());
-            bank.setIsOnlineAvailable(retrievedBankDTO.getIsOnlineAvailable());
-            bank.setNumberOfDepartments(retrievedBankDTO.getNumberOfDepartments());
-            bank.setAddress(retrievedBankDTO.getAddress());
-            bank.setCurrencies(retrievedBankDTO.getCurrencyDTOList().stream()
+            bank.setName(retrievedBankDto.getName());
+            bank.setPhoneNumber(retrievedBankDto.getPhoneNumber());
+            bank.setBankType(retrievedBankDto.getBankType());
+            bank.setIsOnlineAvailable(retrievedBankDto.getIsOnlineAvailable());
+            bank.setNumberOfDepartments(retrievedBankDto.getNumberOfDepartments());
+            bank.setAddress(retrievedBankDto.getAddress());
+            bank.setCurrencies(retrievedBankDto.getCurrencyDtoList().stream()
                     .map(currencyDTO -> {
                         Currency currency = convertToDomain(currencyDTO);
                         currency.setBank(bank);
@@ -125,10 +124,10 @@ public class BankServiceImpl implements BankService {
         }).orElseThrow(() -> new ResourceNotFoundException("Bank with id " + id + " is not found"));
 
         var updatedBank = bankRepository.save(bankToBeSaved);
-        BankDTO convertDtoBank = BankDTO.convertToDTO(updatedBank);
-        convertDtoBank.setCurrencyDTOList(updatedBank.getCurrencies()
+        BankDto convertDtoBank = BankDto.convertToDTO(updatedBank);
+        convertDtoBank.setCurrencyDtoList(updatedBank.getCurrencies()
                 .stream()
-                .map(CurrencyDTO::convertToDTO)
+                .map(CurrencyDto::convertToDTO)
                 .collect(Collectors.toList()));
         return convertDtoBank;
     }
