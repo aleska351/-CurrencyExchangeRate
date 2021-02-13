@@ -1,7 +1,6 @@
 package com.goncharenko.currencyexchangerate.controllers;
 
-import com.goncharenko.currencyexchangerate.dto.BankDTO;
-import com.goncharenko.currencyexchangerate.dto.CurrencyDTO;
+import com.goncharenko.currencyexchangerate.dto.BankDto;
 import com.goncharenko.currencyexchangerate.service.BankService;
 import com.goncharenko.currencyexchangerate.service.CurrencyService;
 import org.springframework.http.HttpStatus;
@@ -23,23 +22,24 @@ public class BankController {
     }
 
     @PostMapping
-    public ResponseEntity<BankDTO> create(@RequestBody BankDTO bankDTO) {
+    public ResponseEntity<BankDto> create(@RequestBody BankDto bankDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(bankService.create(bankDTO));
     }
 
     @GetMapping
-    public ResponseEntity<List<BankDTO>> getBanks() {
-        return ResponseEntity.status(HttpStatus.OK).body(bankService.getAll());
+    public ResponseEntity<List<BankDto>> getBanks(@RequestParam(required = false) String search,
+                                                  @RequestParam(required = false) String sortField) {
+        return ResponseEntity.status(HttpStatus.OK).body(bankService.getAll(search, sortField));
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<BankDTO> getBank(@PathVariable Long id) {
+    public ResponseEntity<BankDto> getBank(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(bankService.getById(id));
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<BankDTO> update(@PathVariable Long id,
-                                          @RequestBody BankDTO bankDTO) {
+    public ResponseEntity<BankDto> update(@PathVariable Long id,
+                                          @RequestBody BankDto bankDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(bankService.update(id, bankDTO));
     }
 
@@ -48,11 +48,6 @@ public class BankController {
         bankService.delete(id);
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT).build();
-    }
-
-    @GetMapping(path = "/{id}/currencies/")
-    public ResponseEntity<List<CurrencyDTO>> getCurrencyByBankId(@PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(currencyService.getAllCurrenciesByBankId(id));
     }
 
 }

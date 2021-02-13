@@ -1,24 +1,27 @@
 package com.goncharenko.currencyexchangerate.dao;
 
+import com.goncharenko.currencyexchangerate.domain.Bank;
 import com.goncharenko.currencyexchangerate.domain.Currency;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 
-public interface CurrencyRepository extends Paginated<Currency> {
+public interface CurrencyRepository extends JpaRepository<Currency, Long> {
 
-    Optional<Currency> getById(Long id);
+    List<Currency> findAllByNameContains(String partName);
 
-    List<Currency> getAll();
+    List<Currency> findAllByCreatedDateAfter(Instant date);
 
-    List<Currency> getAllCurrenciesByBankId(Long bankId);
+    List<Currency> findAllByPurchaseOrSale(String purchase, String sale);
 
-    Optional<Currency> create(Long bankId, Currency currency);
+    List<Currency> findAllByBank(Bank bank);
 
-    Optional<Currency> update(Long id, Currency currency);
 
-    void delete(Long id);
 
-    void deleteAllByBankId(Long bankId);
+
+    //List<Currency> getAllByBankIdSearchAndSort(Example<Currency> example, Sort sort);
+
 }

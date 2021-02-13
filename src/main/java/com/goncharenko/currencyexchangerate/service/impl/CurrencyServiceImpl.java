@@ -2,68 +2,72 @@ package com.goncharenko.currencyexchangerate.service.impl;
 
 import com.goncharenko.currencyexchangerate.dao.BankRepository;
 import com.goncharenko.currencyexchangerate.dao.CurrencyRepository;
+import com.goncharenko.currencyexchangerate.domain.Bank;
 import com.goncharenko.currencyexchangerate.domain.Currency;
-import com.goncharenko.currencyexchangerate.dto.CurrencyDTO;
+import com.goncharenko.currencyexchangerate.dto.CurrencyDto;
 import com.goncharenko.currencyexchangerate.exceptions.ResourceNotFoundException;
+
+import com.goncharenko.currencyexchangerate.service.CurrencyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class CurrencyServiceImpl implements com.goncharenko.currencyexchangerate.service.CurrencyService {
+public class CurrencyServiceImpl implements CurrencyService {
     private final CurrencyRepository currencyRepository;
     private final BankRepository bankRepository;
 
 
     @Transactional
-    public CurrencyDTO getById(Long id) {
-        Currency currency = currencyRepository.getById(id).orElseThrow(
+    public CurrencyDto getById(Long id) {
+        Currency currency = currencyRepository.findById(id).orElseThrow(
                 () ->
                 {
                     log.debug("There is no currency with id {} ", id);
                     throw new ResourceNotFoundException("There are no currencies with id " + id);
                 });
         log.info("Currency with id {} was retrieved", id);
-        return CurrencyDTO.convertToDTO(currency);
+        return CurrencyDto.convertToDTO(currency);
     }
 
     @Transactional
-    public List<CurrencyDTO> getAll() {
-        List<Currency> currencies = currencyRepository.getAll();
-        if (CollectionUtils.isEmpty(currencies)) {
-            log.debug("There are no currencies in table ");
-            throw new ResourceNotFoundException("There are no currencies in table");
-        }
+    public List<CurrencyDto> getAll() {
+        List<Currency> currencies;
+        currencies = currencyRepository.findAll();
         log.info("Retrieved all currencies");
-        return currencies.stream().map(CurrencyDTO::convertToDTO).collect(Collectors.toList());
+        return currencies.stream().map(CurrencyDto::convertToDTO).collect(Collectors.toList());
     }
 
     @Transactional
-    public List<CurrencyDTO> getAllCurrenciesByBankId(Long bankId) {
-        List<Currency> currencies = currencyRepository.getAllCurrenciesByBankId(bankId);
-        if (CollectionUtils.isEmpty(currencies)) {
-            log.debug("There are no currencies with  bank id {} in table ", bankId);
-            throw new ResourceNotFoundException("There are no currencies with this bank id ");
+    public List<CurrencyDto> getAllCurrenciesByBankId(Long bankId, String search, String sortField) {
+        Bank bank = bankRepository.findById(bankId).orElseThrow();
+        List<Currency> currencies;
+
+        if (StringUtils.isEmpty(search)) {
+            currencies = bank.getCurrencies();
+        } else {
+        currencies = currencyRepository.findAllByPurchaseOrSale(search, search);
         }
         log.info("Retrieved all currencies with bank id {} ", bankId);
-        return currencies.stream().map(CurrencyDTO::convertToDTO).collect(Collectors.toList());
+        return currencies.stream().map(CurrencyDto::convertToDTO).collect(Collectors.toList());
     }
 
     @Transactional
     @Override
-    public CurrencyDTO create(Long bankId, CurrencyDTO currencyDTO) {
-        if (bankRepository.getById(bankId).isPresent()) {
-            Optional<Currency> createdCurrency = currencyRepository.create(bankId, CurrencyDTO.convertToDomain(currencyDTO));
+    public CurrencyDto create(Long bankId, CurrencyDto currencyDTO) {
+        if (bankRepository.findById(bankId).isPresent()) {
+            Currency createdCurrency = CurrencyDto.convertToDomain(currencyDTO);
+            createdCurrency.setBank(bankRepository.findById(bankId).get());
+            Currency createdCurrencyc = currencyRepository.save(createdCurrency);
             log.info("{} was created", currencyDTO);
-            return CurrencyDTO.convertToDTO(createdCurrency.get());
+            return CurrencyDto.convertToDTO(createdCurrencyc);
         }
         log.debug("{} can't be created ", currencyDTO);
         throw new ResourceNotFoundException("Bank with id " + bankId + " is not found");
@@ -71,20 +75,23 @@ public class CurrencyServiceImpl implements com.goncharenko.currencyexchangerate
 
     @Transactional
     @Override
-    public CurrencyDTO update(Long bankId, CurrencyDTO currencyDTO) {
-        Optional<Currency> updatedCurrency = currencyRepository.update(bankId, CurrencyDTO.convertToDomain(currencyDTO));
-        log.info("{} was updated", currencyDTO);
-        return CurrencyDTO.convertToDTO(updatedCurrency.orElseThrow(() -> {
-            log.debug("{} can't be updated ", currencyDTO);
-            throw new ResourceNotFoundException("Bank with id " + bankId + " is not found");
-        }));
+    public CurrencyDto update(Long id, CurrencyDto currencyDTO) {
+        Currency currencyToBeUpdated = currencyRepository.findById(id).get();
+        currencyToBeUpdated.setName(currencyDTO.getName());
+        currencyToBeUpdated.setShortName(currencyDTO.getShortName());
+        currencyToBeUpdated.setPurchase(currencyDTO.getPurchase());
+        currencyToBeUpdated.setSale(currencyDTO.getSale());
+
+        Currency updatedCurrency = currencyRepository.save(currencyToBeUpdated);
+        CurrencyDto updatedCurrencyDto = CurrencyDto.convertToDTO(updatedCurrency);
+        return updatedCurrencyDto;
     }
 
     @Transactional
     @Override
     public void delete(Long id) {
-        currencyRepository.getById(id).ifPresentOrElse(currency -> {
-            currencyRepository.delete(id);
+        currencyRepository.findById(id).ifPresentOrElse(currency -> {
+            currencyRepository.delete(currency);
             log.info("Currency with id {} was deleted", id);
         }, () -> {
             log.debug("Currency with id {} cannot be delete", id);

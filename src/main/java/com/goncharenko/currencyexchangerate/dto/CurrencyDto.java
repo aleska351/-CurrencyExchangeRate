@@ -10,19 +10,20 @@ import org.springframework.stereotype.Component;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Component
-public class CurrencyDTO {
+public class CurrencyDto {
     private Long id;
     private String name;
     private String shortName;
     private Double purchase;
     private Double sale;
 
-    public static Currency convertToDomain(CurrencyDTO currencyDTO) {
+    public static Currency convertToDomain(CurrencyDto currencyDTO) {
         return new Currency(currencyDTO.getName(), currencyDTO.getShortName(), currencyDTO.getPurchase(), currencyDTO.getSale());
     }
 
-    public static CurrencyDTO convertToDTO(Currency createdCurrency) {
-        return new CurrencyDTO(createdCurrency.getId(), createdCurrency.getName(), createdCurrency.getShortName(), createdCurrency.getPurchase(), createdCurrency.getSale());
+    public static CurrencyDto convertToDTO(Currency createdCurrency) {
+        return new CurrencyDto(createdCurrency.getId(), createdCurrency.getName(), createdCurrency.getShortName(), createdCurrency.getPurchase(), createdCurrency.getSale());
     }
 }
