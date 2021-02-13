@@ -13,7 +13,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "currencies")
-public class Currency {
+public class Currency extends AbstractAuditDomain {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,6 +24,7 @@ public class Currency {
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference
     @JoinColumn(name = "bank_id")
+    @ToString.Exclude
     private Bank bank;
 
     public Currency(String name, String shortName, Double purchase, Double sale) {
@@ -32,17 +33,6 @@ public class Currency {
         this.shortName = shortName;
         this.purchase = purchase;
         this.sale = sale;
-    }
-
-    @Override
-    public String toString() {
-        return "Currency{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", shortName='" + shortName + '\'' +
-                ", purchase=" + purchase +
-                ", sale=" + sale +
-                '}';
     }
 }
 

@@ -5,7 +5,6 @@ values ('PrivatBank', '+380575552233', 'GLOBAL', true, 400, 'Kiev, st. Vesnina 1
        ('AlfaBank', '+380572223344', 'GLOBAL', true, 200, 'Kharkiv, st. Gogol 10'),
        ('CreditBank', '+380440995633', 'LOCAL', false, 400, 'Poltava, st. Halamenuka 3');
 
-
 /* Fill table currencies*/
 insert into currencies (name, short_name, purchase, sale, bank_id)
 VALUES ('United States Dollar', 'USD', 28.25, 28.70, 1),
